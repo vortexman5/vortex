@@ -12,38 +12,11 @@ import time
 import torch
 
 from .env import BaseEnvClient, StepOutput
-from .strategy import IRolloutStrategy, StandardReActStrategy
+from .types import ExperienceOutput
 from .storage import ITrajectoryStorage, FileTrajectoryStorage
 
-
-class ExperienceOutput:
-    """
-    Output from a reinforcement learning experience.
-    
-    Attributes:
-        conversation: List of conversation messages
-        reward: Final reward received
-        text: Full text of the conversation
-        seq_ids: Tokenized sequence IDs
-        attention_mask: Attention mask for the sequence
-        action_mask: Mask indicating action positions
-    """
-    
-    def __init__(
-        self,
-        conversation: List[Dict[str, Any]],
-        reward: float,
-        text: str,
-        seq_ids: List[int] = None,
-        attention_mask: List[int] = None,
-        action_mask: List[int] = None
-    ):
-        self.conversation = conversation
-        self.reward = reward
-        self.text = text
-        self.seq_ids = seq_ids or []
-        self.attention_mask = attention_mask or []
-        self.action_mask = action_mask or []
+# Forward declaration for type hints
+IRolloutStrategy = Any
 
 
 class Task:
@@ -92,10 +65,16 @@ class RLController:
         """
         self.agent = agent
         self.tasks = tasks
-        self.strategy = strategy or StandardReActStrategy()
         self.storage = storage or FileTrajectoryStorage()
         self.max_workers = max_workers
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
+        
+        # Import here to avoid circular imports
+        if strategy is None:
+            from .strategy import StandardReActStrategy
+            self.strategy = StandardReActStrategy()
+        else:
+            self.strategy = strategy
     
     def set_strategy(self, strategy: IRolloutStrategy):
         """Change the rollout strategy."""

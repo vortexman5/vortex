@@ -5,19 +5,20 @@ This module implements reinforcement learning capabilities for OpenHands agents,
 allowing them to learn from interactions with environments and improve over time.
 """
 
+from .types import ExperienceOutput, ConversationMessage
 from .env import BaseEnvClient, StepOutput
-from .controller import RLController
+from .storage import (
+    ITrajectoryStorage,
+    MongoDBTrajectoryStorage,
+    FileTrajectoryStorage
+)
 from .strategy import (
     IRolloutStrategy, 
     StandardReActStrategy,
     ToTStrategy,
     MCTSStrategy
 )
-from .storage import (
-    ITrajectoryStorage,
-    MongoDBTrajectoryStorage,
-    FileTrajectoryStorage
-)
+from .controller import RLController
 from .agent import RLAgent, RLAgentConfig
 
 __all__ = [
@@ -32,5 +33,7 @@ __all__ = [
     "MongoDBTrajectoryStorage",
     "FileTrajectoryStorage",
     "RLAgent",
-    "RLAgentConfig"
+    "RLAgentConfig",
+    "ExperienceOutput",
+    "ConversationMessage"
 ]

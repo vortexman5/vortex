@@ -12,12 +12,7 @@ import random
 import torch
 
 from .env import BaseEnvClient, StepOutput
-from .controller import ExperienceOutput
-
-
-class ConversationMessage(Dict[str, Any]):
-    """A message in a conversation between an agent and an environment."""
-    pass
+from .types import ExperienceOutput, ConversationMessage
 
 
 class TrajectoryNode(TypedDict):
