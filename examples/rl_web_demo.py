@@ -132,9 +132,11 @@ template_content = """
         <div class="panel">
             <h2>Available Actions</h2>
             <ul>
-                <li><strong>search [query]</strong> - Search for products</li>
-                <li><strong>view [product]</strong> - View details of a product</li>
-                <li><strong>buy [product]</strong> - Purchase a product</li>
+                <li><strong>analyze [code]</strong> - Analyze code for issues</li>
+                <li><strong>refactor [code]</strong> - Refactor code to improve it</li>
+                <li><strong>test [code]</strong> - Write tests for the code</li>
+                <li><strong>debug [error]</strong> - Debug an error in the code</li>
+                <li><strong>implement [feature]</strong> - Implement a new feature</li>
             </ul>
         </div>
         
@@ -153,7 +155,7 @@ with open("templates/index.html", "w") as f:
     f.write(template_content)
 
 # Global state
-env_description = "Shopping environment for finding products."
+env_description = "Coding environment for solving programming tasks."
 history = []
 total_reward = 0.0
 done = False
