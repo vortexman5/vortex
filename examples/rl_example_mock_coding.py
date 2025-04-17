@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from openhands.rl.agent import RLAgent
 from openhands.rl.controller import RLController
-from openhands.rl.env import Environment
+from openhands.rl.env import BaseEnvClient, StepOutput
 from openhands.rl.strategy import StandardReActStrategy
 
 
@@ -42,7 +42,7 @@ class MockModel:
             return "I'm not sure what to do with this prompt. Could you clarify?"
 
 
-class SimpleCodingEnvironment(Environment):
+class SimpleCodingEnvironment(BaseEnvClient):
     """Simple coding environment for testing the RL module."""
     
     def __init__(self):
@@ -51,16 +51,24 @@ class SimpleCodingEnvironment(Environment):
         self.done = False
         self.reward = 0.0
         self.step_count = 0
+        self.data_len = 1
     
-    def reset(self) -> str:
+    def __len__(self) -> int:
+        """Return the number of available tasks."""
+        return self.data_len
+    
+    def observe(self) -> str:
+        """Return the current state observation."""
+        return self.state
+    
+    def reset(self, idx: int = 0) -> None:
         """Reset the environment."""
         self.state = "You need to refactor a bubble sort algorithm to improve its efficiency."
         self.done = False
         self.reward = 0.0
         self.step_count = 0
-        return self.state
     
-    def step(self, action: str) -> Dict[str, Any]:
+    def step(self, action: str) -> StepOutput:
         """Take a step in the environment."""
         self.step_count += 1
         
@@ -170,11 +178,11 @@ Debugging steps:
             self.state += "\n\nYou've reached the maximum number of steps. Please complete the task."
             self.done = True
         
-        return {
-            "state": self.state,
-            "reward": self.reward,
-            "done": self.done
-        }
+        return StepOutput(
+            state=self.state,
+            reward=self.reward,
+            done=self.done
+        )
 
 
 def main():
@@ -182,30 +190,46 @@ def main():
     # Create a mock model
     model = MockModel()
     
-    # Create an agent
-    agent = RLAgent(model=model)
-    
     # Create an environment
     env = SimpleCodingEnvironment()
     
-    # Create a strategy
-    strategy = StandardReActStrategy()
+    # Initialize the environment
+    env.reset(0)
+    state = env.observe()
+    print(f"Initial state: {state}")
     
-    # Create a controller
-    controller = RLController(agent=agent, env=env, strategy=strategy)
+    # Simulate a few steps
+    actions = ["analyze the sort algorithm", "debug the sort algorithm", "refactor the sort algorithm"]
+    trajectory = []
     
-    # Run the controller
-    trajectory = controller.run()
+    for i, action in enumerate(actions):
+        print(f"\nStep {i+1}: {action}")
+        
+        # Generate a response using the mock model
+        response = model.generate(action)
+        print(f"Model response: {response}")
+        
+        # Take a step in the environment
+        step_output = env.step(action)
+        print(f"Environment response: {step_output.state[:100]}...")
+        print(f"Reward: {step_output.reward}")
+        print(f"Done: {step_output.done}")
+        
+        # Store the step in the trajectory
+        trajectory.append((state, action, step_output.reward, step_output.state, step_output.done))
+        
+        # Update the state
+        state = step_output.state
+        
+        # Check if we're done
+        if step_output.done:
+            print("\nTask completed!")
+            break
     
-    # Print the trajectory
-    print("\nTrajectory:")
+    # Print the trajectory summary
+    print("\nTrajectory Summary:")
     for i, (state, action, reward, next_state, done) in enumerate(trajectory):
-        print(f"\nStep {i+1}:")
-        print(f"State: {state}")
-        print(f"Action: {action}")
-        print(f"Reward: {reward}")
-        print(f"Next State: {next_state}")
-        print(f"Done: {done}")
+        print(f"Step {i+1}: Action={action}, Reward={reward}, Done={done}")
     
     # Print the total reward
     total_reward = sum(reward for _, _, reward, _, _ in trajectory)
