@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OpenHands RL Coding Demo</title>
+    <title>OpenHands RL Demo</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -65,19 +65,10 @@
         .reward {
             font-weight: bold;
         }
-        pre {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-        }
-        code {
-            font-family: 'Courier New', monospace;
-        }
     </style>
 </head>
 <body>
-    <h1>OpenHands RL Coding Demo</h1>
+    <h1>OpenHands RL Demo</h1>
     <div class="container">
         <div class="panel">
             <h2>Environment</h2>
@@ -92,7 +83,7 @@
             <h2>Interaction History</h2>
             {% for message in history %}
                 <div class="message {{ message.type }}">
-                    <strong>{{ message.type|upper }}:</strong> {{ message.content | safe }}
+                    <strong>{{ message.type|upper }}:</strong> {{ message.content }}
                 </div>
             {% endfor %}
         </div>
