@@ -77,6 +77,8 @@ api_key = "your-anthropic-api-key"
 
 ### 1.3 Google Gemini
 
+#### 1.3.1 Gemini 1.5 Pro/Flash
+
 **API Details:**
 - **Provider:** Google
 - **Models:** Gemini 1.5 Pro, Gemini 1.5 Flash
@@ -98,12 +100,44 @@ response = model.generate_content(
 print(response.text)
 ```
 
+#### 1.3.2 Gemini 2.0 Flash
+
+**API Details:**
+- **Provider:** Google
+- **Model:** Gemini 2.0 Flash
+- **Capabilities:** 
+  - Handles audio, images, videos, and text inputs
+  - Produces text outputs, with experimental image generation and upcoming audio generation
+  - 1 million token context window
+  - Optimized for next-generation features, speed, thinking, realtime streaming, and multimodal generation
+- **Pricing:** 
+  - Input: $0.10 per 1M tokens (text/image/video), $0.70 per 1M tokens (audio)
+  - Output: $0.40 per 1M tokens
+  - Context caching: $0.025 per 1M tokens (text/image/video), $0.175 per 1M tokens (audio)
+  - Context storage: $1.00 per 1M tokens per hour
+- **Free Tier:** Available with limited rate limits
+- **API Documentation:** [Gemini API Docs](https://ai.google.dev/gemini-api/docs/models)
+
+**Example API Call:**
+```python
+import google.generativeai as genai
+
+genai.configure(api_key="your-api-key")
+
+model = genai.GenerativeModel('gemini-2.0-flash')
+response = model.generate_content(
+    "Write a Python function that implements a binary search algorithm with detailed comments."
+)
+
+print(response.text)
+```
+
 **Integration with Vortex/OpenHands:**
 ```toml
 # In config.toml
 [llm]
 provider = "google"
-model = "gemini-1.5-pro"
+model = "gemini-2.0-flash"
 api_key = "your-google-api-key"
 ```
 
