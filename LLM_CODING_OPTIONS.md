@@ -142,7 +142,7 @@ api_key = "your-cohere-api-key"
 
 ## 2. Local LLM Server Setup for Your Hardware
 
-Based on your hardware specifications (AMD A9-9410 dual-core CPU, 8GB RAM, AMD Radeon R5 Graphics), here are optimized instructions for setting up a local LLM server for coding tasks.
+Based on your hardware specifications (AMD A9-9410 dual-core CPU, 8GB RAM, AMD Radeon R5 Graphics), here are optimized instructions for setting up a local Mistral 7B server for coding tasks.
 
 ### 2.1 Hardware Assessment
 
@@ -152,97 +152,98 @@ Your system has:
 - AMD Radeon R5 Graphics (not CUDA-compatible)
 - 223GB SSD with ~97GB free space
 
-This hardware is suitable for running smaller quantized models (1B-3B parameters). For optimal performance, we'll focus on efficient models that can run on CPU.
+This hardware is suitable for running smaller quantized models with optimizations. For Mistral 7B, we'll need to use aggressive quantization and optimize for CPU-only inference.
 
-### 2.2 Installing Ollama
+### 2.2 Setting Up llama.cpp for Mistral 7B
 
-Ollama is a lightweight tool for running LLMs locally that works well on modest hardware.
-
-```bash
-# Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Verify installation
-ollama --version
-```
-
-### 2.3 Pulling Optimized Models for Coding
-
-For your hardware, these models are recommended:
+llama.cpp is a lightweight C/C++ inference engine that can run Mistral 7B efficiently on CPU-only systems.
 
 ```bash
-# Pull CodeLlama 7B quantized (most efficient coding model for your hardware)
-ollama pull codellama:7b-q4_0
+# Install build dependencies
+sudo apt update
+sudo apt install -y build-essential cmake git python3-dev python3-pip
 
-# Pull Phi-3 Mini (excellent performance-to-size ratio)
-ollama pull phi3:mini
+# Clone llama.cpp repository
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
 
-# Pull TinyLlama (very lightweight option)
-ollama pull tinyllama:1.1b-chat-v1.0-q4_0
+# Build llama.cpp
+make
+
+# Create a Python virtual environment
+python3 -m pip install --user virtualenv
+python3 -m venv venv
+source venv/bin/activate
+
+# Install Python bindings
+pip install -e .
 ```
 
-### 2.4 Setting Up Ollama Server
+### 2.3 Download Quantized Mistral 7B Model
+
+For your hardware, we'll use a 4-bit quantized version of Mistral 7B to minimize memory usage.
 
 ```bash
-# Start Ollama server
-ollama serve
+# Create a models directory
+mkdir -p models
+cd models
 
-# In a new terminal, test the server
-curl -X POST http://localhost:11434/api/generate -d '{
-  "model": "codellama:7b-q4_0",
-  "prompt": "Write a Python function to check if a number is prime."
-}'
+# Download a 4-bit quantized Mistral 7B model
+# This is optimized for CPU usage
+wget https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q4_K_M.gguf
+
+# Return to the main directory
+cd ..
 ```
 
-### 2.5 Creating a Custom Model with Coding Focus
-
-Create a Modelfile to customize a model for coding:
+### 2.4 Running Mistral 7B on CPU
 
 ```bash
-# Create a directory for your custom model
-mkdir -p ~/ollama-models
-cd ~/ollama-models
-
-# Create a Modelfile
-cat > Modelfile << 'EOF'
-FROM codellama:7b-q4_0
-
-# System prompt to focus on coding
-SYSTEM """
-You are an expert coding assistant. You write clean, efficient, and well-documented code.
-Focus on providing practical solutions with proper error handling.
-Explain your code when it would be helpful.
-"""
-
-# Set parameters for better performance on your hardware
-PARAMETER temperature 0.7
-PARAMETER num_ctx 2048
-EOF
-
-# Create the custom model
-ollama create coding-assistant -f Modelfile
-
-# Test your custom model
-ollama run coding-assistant "Write a function to convert a string to camelCase in JavaScript"
+# Run the model with CPU-only configuration
+./main -m ./models/mistral-7b-instruct-v0.2.Q4_K_M.gguf \
+    -ngl 0 \
+    --color \
+    -ins -b 256 \
+    --temp 0.7 \
+    --ctx-size 2048
 ```
 
-### 2.6 Setting Up a REST API Server
+Parameters explained:
+- `-m`: Path to the model file
+- `-ngl 0`: Disables GPU usage, forces CPU-only mode
+- `--color`: Enables colored output
+- `-ins`: Enables instruction mode for better responses
+- `-b 256`: Batch size of 256 (adjust lower if you experience memory issues)
+- `--temp 0.7`: Temperature setting for response randomness
+- `--ctx-size 2048`: Context window size (reduce if memory issues occur)
 
-For integration with Vortex/OpenHands, we'll set up a simple REST API server:
+### 2.5 Creating a Python Interface
+
+For integration with Vortex/OpenHands, we'll create a Python interface:
 
 ```bash
 # Install required packages
-pip install fastapi uvicorn pydantic
+pip install llama-cpp-python fastapi uvicorn pydantic
 
 # Create a server script
-cat > ollama_server.py << 'EOF'
+cat > mistral_server.py << 'EOF'
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import httpx
+from llama_cpp import Llama
 import uvicorn
 import json
 
-app = FastAPI(title="Local LLM API Server")
+app = FastAPI(title="Mistral 7B API Server")
+
+# Initialize the model
+model_path = "./models/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+llm = Llama(
+    model_path=model_path,
+    n_ctx=2048,        # Context size
+    n_batch=256,       # Batch size
+    n_gpu_layers=0,    # Force CPU only
+    verbose=False      # Disable verbose output
+)
 
 class CompletionRequest(BaseModel):
     model: str
@@ -257,7 +258,7 @@ class Message(BaseModel):
 @app.post("/v1/chat/completions")
 async def create_completion(request: CompletionRequest):
     try:
-        # Convert to Ollama format
+        # Format prompt based on messages
         prompt = ""
         for msg in request.messages:
             if msg.role == "system":
@@ -267,46 +268,37 @@ async def create_completion(request: CompletionRequest):
             elif msg.role == "assistant":
                 prompt += f"\n{msg.content}"
         
-        # Call Ollama API
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "http://localhost:11434/api/generate",
-                json={
-                    "model": request.model,
-                    "prompt": prompt,
-                    "temperature": request.temperature,
-                    "max_tokens": request.max_tokens
-                },
-                timeout=60.0
-            )
-            
-            if response.status_code != 200:
-                raise HTTPException(status_code=response.status_code, detail="Ollama API error")
-            
-            result = response.json()
-            
-            # Format response like OpenAI
-            return {
-                "id": "local-completion",
-                "object": "chat.completion",
-                "created": 0,
-                "model": request.model,
-                "choices": [
-                    {
-                        "index": 0,
-                        "message": {
-                            "role": "assistant",
-                            "content": result.get("response", "")
-                        },
-                        "finish_reason": "stop"
-                    }
-                ],
-                "usage": {
-                    "prompt_tokens": 0,
-                    "completion_tokens": 0,
-                    "total_tokens": 0
+        # Generate response
+        output = llm(
+            prompt,
+            max_tokens=request.max_tokens,
+            temperature=request.temperature,
+            stop=["[INST]", "</s>"],
+            echo=False
+        )
+        
+        # Format response like OpenAI
+        return {
+            "id": "mistral-completion",
+            "object": "chat.completion",
+            "created": 0,
+            "model": request.model,
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": output["choices"][0]["text"].strip()
+                    },
+                    "finish_reason": "stop"
                 }
+            ],
+            "usage": {
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0
             }
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -318,16 +310,23 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 EOF
 
+# Make the script executable
+chmod +x mistral_server.py
+```
+
+### 2.6 Creating a Systemd Service
+
+```bash
 # Create a systemd service for auto-start
-cat > ollama-api.service << 'EOF'
+cat > mistral-api.service << 'EOF'
 [Unit]
-Description=Ollama API Server
+Description=Mistral 7B API Server
 After=network.target
 
 [Service]
 User=YOUR_USERNAME
-WorkingDirectory=/home/YOUR_USERNAME
-ExecStart=/usr/bin/python3 /home/YOUR_USERNAME/ollama_server.py
+WorkingDirectory=/home/YOUR_USERNAME/llama.cpp
+ExecStart=/home/YOUR_USERNAME/llama.cpp/venv/bin/python /home/YOUR_USERNAME/llama.cpp/mistral_server.py
 Restart=on-failure
 RestartSec=5
 
@@ -336,16 +335,16 @@ WantedBy=multi-user.target
 EOF
 
 # Replace YOUR_USERNAME with your actual username
-sed -i "s/YOUR_USERNAME/$USER/g" ollama-api.service
+sed -i "s/YOUR_USERNAME/$USER/g" mistral-api.service
 
 # Install the service
-sudo mv ollama-api.service /etc/systemd/system/
+sudo mv mistral-api.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable ollama-api
-sudo systemctl start ollama-api
+sudo systemctl enable mistral-api
+sudo systemctl start mistral-api
 
 # Check status
-sudo systemctl status ollama-api
+sudo systemctl status mistral-api
 ```
 
 ### 2.7 Performance Optimization for Your Hardware
@@ -374,9 +373,12 @@ if [ $CURRENT_SWAP -lt 4096 ]; then
     echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
 fi
 
-# Set process priority for Ollama
-sudo renice -n -10 -p $(pgrep ollama)
-sudo ionice -c 2 -n 0 -p $(pgrep ollama)
+# Set process priority for Mistral server
+MISTRAL_PID=$(pgrep -f mistral_server.py)
+if [ ! -z "$MISTRAL_PID" ]; then
+    sudo renice -n -10 -p $MISTRAL_PID
+    sudo ionice -c 2 -n 0 -p $MISTRAL_PID
+fi
 
 echo "System optimized for LLM inference"
 EOF
@@ -390,16 +392,16 @@ chmod +x optimize_for_llm.sh
 
 ## 3. Integrating with Vortex/OpenHands Framework
 
-### 3.1 Configure Vortex to Use Local LLM Server
+### 3.1 Configure Vortex to Use Local Mistral 7B Server
 
-Edit your `config.toml` file to use the local LLM server:
+Edit your `config.toml` file to use the local Mistral 7B server:
 
 ```toml
 [llm]
 provider = "openai"  # We're using the OpenAI-compatible API format
 base_url = "http://localhost:8000/v1"  # Point to our local server
 api_key = "dummy-key"  # Not used but required
-model = "coding-assistant"  # The model name we created in Ollama
+model = "mistral-7b"  # The model name we're using
 ```
 
 ### 3.2 Testing the Integration
@@ -408,7 +410,7 @@ Create a test script to verify the integration:
 
 ```bash
 # Create a test script
-cat > test_local_llm.py << 'EOF'
+cat > test_mistral.py << 'EOF'
 import requests
 import json
 
@@ -417,7 +419,7 @@ headers = {
     "Content-Type": "application/json"
 }
 data = {
-    "model": "coding-assistant",
+    "model": "mistral-7b",
     "messages": [
         {"role": "system", "content": "You are a coding assistant."},
         {"role": "user", "content": "Write a simple Python function to calculate factorial."}
@@ -432,7 +434,7 @@ print(json.dumps(response.json(), indent=2))
 EOF
 
 # Run the test
-python3 test_local_llm.py
+python3 test_mistral.py
 ```
 
 ### 3.3 Monitoring Resource Usage
@@ -441,10 +443,10 @@ Create a monitoring script to ensure your system can handle the LLM:
 
 ```bash
 # Create a monitoring script
-cat > monitor_llm.sh << 'EOF'
+cat > monitor_mistral.sh << 'EOF'
 #!/bin/bash
 
-echo "Monitoring system resources for LLM usage..."
+echo "Monitoring system resources for Mistral 7B usage..."
 echo "Press Ctrl+C to exit"
 
 while true; do
@@ -458,41 +460,134 @@ while true; do
     echo -e "\n=== Swap Usage ==="
     free -h | grep "Swap:"
     
-    echo -e "\n=== Ollama Process ==="
+    echo -e "\n=== Mistral Process ==="
     ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -n 2
-    ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | grep ollama
+    ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | grep mistral
     
     sleep 2
 done
 EOF
 
 # Make the script executable
-chmod +x monitor_llm.sh
+chmod +x monitor_mistral.sh
 ```
 
-## 4. Model Recommendations for Your Hardware
+## 4. Alternative Approach: Using Hugging Face Transformers
 
-Based on your specific hardware (AMD A9-9410, 8GB RAM), here are the recommended models for coding tasks:
+If you prefer a more Python-native approach, you can use Hugging Face Transformers:
 
-1. **CodeLlama 7B (4-bit quantized)** - Best balance of performance and resource usage
-   - Memory usage: ~4GB RAM
-   - Disk space: ~4GB
-   - Performance: Good for most coding tasks
+```bash
+# Create a new virtual environment
+python3 -m venv mistral_env
+source mistral_env/bin/activate
 
-2. **Phi-3 Mini** - Microsoft's efficient model
-   - Memory usage: ~2.5GB RAM
-   - Disk space: ~2GB
-   - Performance: Surprisingly good for its size
+# Install required packages
+pip install transformers torch accelerate bitsandbytes langchain fastapi uvicorn
 
-3. **TinyLlama 1.1B** - Ultra-lightweight option
-   - Memory usage: ~1GB RAM
-   - Disk space: ~600MB
-   - Performance: Basic coding assistance, best for simple tasks
+# Create a server script
+cat > mistral_hf_server.py << 'EOF'
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import uvicorn
 
-4. **StarCoder 1B** - Specialized for coding
-   - Memory usage: ~1.5GB RAM
-   - Disk space: ~1GB
-   - Performance: Good for code completion
+app = FastAPI(title="Mistral 7B HF API Server")
+
+# Configure 4-bit quantization
+quantization_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16
+)
+
+# Load model and tokenizer
+model_id = "mistralai/Mistral-7B-Instruct-v0.2"
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    quantization_config=quantization_config,
+    device_map="auto",
+    low_cpu_mem_usage=True
+)
+
+class CompletionRequest(BaseModel):
+    model: str
+    messages: list
+    temperature: float = 0.7
+    max_tokens: int = 1024
+
+class Message(BaseModel):
+    role: str
+    content: str
+
+@app.post("/v1/chat/completions")
+async def create_completion(request: CompletionRequest):
+    try:
+        # Format prompt based on messages
+        prompt = ""
+        for msg in request.messages:
+            if msg.role == "system":
+                prompt = f"<s>[INST] {msg.content} [/INST]"
+            elif msg.role == "user":
+                prompt += f"\n\n[INST] {msg.content} [/INST]"
+            elif msg.role == "assistant":
+                prompt += f"\n{msg.content}"
+        
+        # Tokenize input
+        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+        
+        # Generate response
+        with torch.no_grad():
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=request.max_tokens,
+                temperature=request.temperature,
+                do_sample=True,
+                pad_token_id=tokenizer.eos_token_id
+            )
+        
+        # Decode response
+        response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        response_text = response_text.replace(prompt, "").strip()
+        
+        # Format response like OpenAI
+        return {
+            "id": "mistral-completion",
+            "object": "chat.completion",
+            "created": 0,
+            "model": request.model,
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": response_text
+                    },
+                    "finish_reason": "stop"
+                }
+            ],
+            "usage": {
+                "prompt_tokens": len(inputs.input_ids[0]),
+                "completion_tokens": len(outputs[0]) - len(inputs.input_ids[0]),
+                "total_tokens": len(outputs[0])
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+EOF
+
+# Make the script executable
+chmod +x mistral_hf_server.py
+```
 
 ## 5. Troubleshooting
 
@@ -501,13 +596,11 @@ Based on your specific hardware (AMD A9-9410, 8GB RAM), here are the recommended
 If you encounter out-of-memory errors:
 
 ```bash
-# Reduce model context length
-ollama pull codellama:7b-q4_0
-cat > Modelfile << 'EOF'
-FROM codellama:7b-q4_0
-PARAMETER num_ctx 1024  # Reduced from default
-EOF
-ollama create coding-assistant-light -f Modelfile
+# Reduce context window size
+./main -m ./models/mistral-7b-instruct-v0.2.Q4_K_M.gguf \
+    -ngl 0 \
+    --ctx-size 1024 \  # Reduced from 2048
+    -b 128             # Reduced batch size
 ```
 
 ### 5.2 Slow Response Times
@@ -515,12 +608,9 @@ ollama create coding-assistant-light -f Modelfile
 If responses are too slow:
 
 ```bash
-# Use a smaller model
-ollama pull tinyllama:1.1b-chat-v1.0-q4_0
-
-# Update your config.toml
-# [llm]
-# model = "tinyllama:1.1b-chat-v1.0-q4_0"
+# Try a smaller model or more aggressive quantization
+# Download a 3-bit quantized model instead
+wget https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q3_K_M.gguf
 ```
 
 ### 5.3 API Connection Issues
@@ -532,18 +622,18 @@ If Vortex can't connect to the local API:
 curl http://localhost:8000/health
 
 # Restart the API server
-sudo systemctl restart ollama-api
+sudo systemctl restart mistral-api
 
 # Check logs for errors
-sudo journalctl -u ollama-api -n 50
+sudo journalctl -u mistral-api -n 50
 ```
 
 ## 6. Conclusion
 
-This guide provides both commercial API options and a local LLM server setup optimized for your specific hardware. The local setup is designed to work within the constraints of your AMD A9-9410 CPU and 8GB RAM while still providing useful coding assistance.
+This guide provides both commercial API options and a local Mistral 7B server setup optimized for your specific hardware. The local setup is designed to work within the constraints of your AMD A9-9410 CPU and 8GB RAM while still providing useful coding assistance.
 
 For the best experience on your hardware:
-1. Use the CodeLlama 7B 4-bit quantized model for most coding tasks
+1. Use the 4-bit quantized Mistral 7B model for most coding tasks
 2. Keep the context window small (1024-2048 tokens)
 3. Close other memory-intensive applications when using the LLM
 4. Consider increasing your swap space to 4GB
