@@ -201,10 +201,20 @@ model = "gpt-4o"
 #native_tool_calling = None
 
 
-
 [llm.gpt4o-mini]
 api_key = ""
 model = "gpt-4o"
+
+[llm.gemini-2-flash]
+api_key = ""
+model = "gemini-2.0-flash"
+provider = "google"
+# Optional: Uncomment to set specific parameters for Gemini 2.0 Flash
+#temperature = 0.7
+#max_output_tokens = 8192
+#top_p = 0.95
+#input_cost_per_token = 0.00010  # $0.10 per 1M tokens
+#output_cost_per_token = 0.00040  # $0.40 per 1M tokens
 
 
 #################################### Agent ###################################
