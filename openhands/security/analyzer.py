@@ -5,6 +5,7 @@ from uuid import uuid4
 from fastapi import Request
 
 from openhands.core.logger import openhands_logger as logger
+from openhands.core.config import SecurityConfig
 from openhands.events.action.action import Action, ActionSecurityRisk
 from openhands.events.event import Event
 from openhands.events.stream import EventStream, EventStreamSubscriber
@@ -13,13 +14,16 @@ from openhands.events.stream import EventStream, EventStreamSubscriber
 class SecurityAnalyzer:
     """Security analyzer that receives all events and analyzes agent actions for security risks."""
 
-    def __init__(self, event_stream: EventStream) -> None:
+    def __init__(self, event_stream: EventStream, security_config: SecurityConfig = None) -> None:
         """Initializes a new instance of the SecurityAnalyzer class.
 
         Args:
             event_stream: The event stream to listen for events.
+            security_config: The security configuration, including admin mode settings.
         """
         self.event_stream = event_stream
+        self.security_config = security_config or SecurityConfig()
+        self.admin_mode = self.security_config.admin_mode
 
         def sync_on_event(event: Event) -> None:
             asyncio.create_task(self.on_event(event))
@@ -57,7 +61,14 @@ class SecurityAnalyzer:
         pass
 
     async def security_risk(self, event: Action) -> ActionSecurityRisk:
-        """Evaluates the Action for security risks and returns the risk level."""
+        """Evaluates the Action for security risks and returns the risk level.
+        
+        In admin mode, all actions are considered safe.
+        """
+        if self.admin_mode:
+            logger.info("Admin mode enabled: Bypassing security checks")
+            return ActionSecurityRisk.NONE
+            
         raise NotImplementedError(
             'Need to implement security_risk method in SecurityAnalyzer subclass'
         )

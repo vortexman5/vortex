@@ -114,7 +114,7 @@ class AgentSession:
         finished = False  # For monitoring
         runtime_connected = False
         try:
-            self._create_security_analyzer(config.security.security_analyzer)
+            self._create_security_analyzer(config.security.security_analyzer, config.security)
             runtime_connected = await self._create_runtime(
                 runtime_name=runtime_name,
                 config=config,
@@ -239,18 +239,19 @@ class AgentSession:
         assert isinstance(replay_events[0], MessageAction)
         return replay_events[0]
 
-    def _create_security_analyzer(self, security_analyzer: str | None):
+    def _create_security_analyzer(self, security_analyzer: str | None, security_config=None):
         """Creates a SecurityAnalyzer instance that will be used to analyze the agent actions
 
         Parameters:
         - security_analyzer: The name of the security analyzer to use
+        - security_config: The security configuration, including admin mode settings
         """
 
         if security_analyzer:
             self.logger.debug(f'Using security analyzer: {security_analyzer}')
             self.security_analyzer = options.SecurityAnalyzers.get(
                 security_analyzer, SecurityAnalyzer
-            )(self.event_stream)
+            )(self.event_stream, security_config)
 
     async def _create_runtime(
         self,

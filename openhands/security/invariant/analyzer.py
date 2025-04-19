@@ -47,9 +47,10 @@ class InvariantAnalyzer(SecurityAnalyzer):
         event_stream: EventStream,
         policy: str | None = None,
         sid: str | None = None,
+        security_config=None,
     ) -> None:
         """Initializes a new instance of the InvariantAnalzyer class."""
-        super().__init__(event_stream)
+        super().__init__(event_stream, security_config)
         self.trace = []
         self.input = []
         self.settings = {}
@@ -306,6 +307,11 @@ class InvariantAnalyzer(SecurityAnalyzer):
         self.event_stream.add_event(new_event, event_source)
 
     async def security_risk(self, event: Action) -> ActionSecurityRisk:
+        # Check if admin mode is enabled - bypass all security checks
+        if self.admin_mode:
+            logger.info("Admin mode enabled: Bypassing Invariant security checks")
+            return ActionSecurityRisk.NONE
+            
         logger.debug('Calling security_risk on InvariantAnalyzer')
         new_elements = parse_element(self.trace, event)
         input_data = [
