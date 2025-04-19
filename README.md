@@ -15,6 +15,7 @@ Vortex is an implementation of the OpenHands AI framework, a powerful and flexib
 - **Scalable Deployment**: Deploy on custom servers with various configuration options
 - **Event-Driven Communication**: Central event stream for efficient component interaction
 - **Microagent Support**: Specialized agents for domain-specific knowledge and tasks
+- **Admin Mode**: Advanced mode for unrestricted agent capabilities (for personal use only)
 
 ## Table of Contents
 
@@ -23,6 +24,7 @@ Vortex is an implementation of the OpenHands AI framework, a powerful and flexib
 - [Knowledge Storage](#knowledge-storage)
 - [Pipelines](#pipelines)
 - [Restrictions and Security](#restrictions-and-security)
+- [Admin Mode](#admin-mode)
 - [Deployment](#deployment)
 - [Remote Access](#remote-access)
 - [Customization](#customization)
@@ -166,6 +168,49 @@ Frontend --Actions--> EventStream
 - API key management
 - Session management
 
+## Admin Mode
+
+For advanced users who need unrestricted agent capabilities, OpenHands provides an admin mode that bypasses security restrictions. This mode is intended for personal use only and should be used with extreme caution.
+
+### What is Admin Mode?
+
+Admin mode disables the security checks that normally prevent potentially risky operations. When enabled:
+
+- Security analyzers (like the Invariant analyzer) will not block any actions
+- Confirmation prompts for potentially dangerous operations are bypassed
+- The agent has unrestricted access to execute commands and modify files
+
+### How to Enable Admin Mode
+
+1. **Create a dedicated admin configuration file**:
+   ```bash
+   cp config.template.toml config.admin.toml
+   ```
+
+2. **Edit the configuration file** to enable admin mode:
+   ```toml
+   [security]
+   # Enable admin mode with unrestricted capabilities
+   admin_mode = true
+   
+   # Use the invariant security analyzer (will be bypassed in admin mode)
+   security_analyzer = "invariant"
+   
+   # Disable confirmation mode for convenience
+   confirmation_mode = false
+   ```
+
+3. **Start OpenHands with the admin configuration**:
+   ```bash
+   # For CLI mode
+   python -m openhands.cli --config config.admin.toml
+   
+   # For server mode
+   python -m openhands.server --config config.admin.toml
+   ```
+
+For detailed instructions and security implications, see the [Admin Mode Documentation](docs/admin_mode.md).
+
 ## Deployment
 
 ### Hardware Requirements
@@ -295,6 +340,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 For more detailed information, please refer to the following documentation:
-- [Models and Knowledge Storage](models_and_knowledge_storage.md)
-- [Pipelines and Restrictions](pipelines_and_restrictions.md)
-- [Deployment Guide](deployment_guide.md)
+- [Models and Knowledge Storage](docs/models_and_knowledge_storage.md)
+- [Pipelines and Restrictions](docs/pipelines_and_restrictions.md)
+- [Deployment Guide](docs/deployment_guide.md)
+- [Admin Mode Guide](docs/admin_mode.md)
