@@ -1,0 +1,22 @@
+# Admin Mode Configuration for Personal Use Only
+# WARNING: This configuration disables security restrictions
+
+[security]
+# Enable admin mode with unrestricted capabilities
+admin_mode = true
+
+# Use the invariant security analyzer (will be bypassed in admin mode)
+security_analyzer = "invariant"
+
+# Disable confirmation mode for convenience
+confirmation_mode = false
+
+[llm.gemini-2-flash]
+# Add your Gemini 2.0 Flash API key here
+api_key = ""
+model = "gemini-2.0-flash"
+provider = "google"
+# Recommended settings for Gemini 2.0 Flash
+temperature = 0.7
+max_output_tokens = 8192
+top_p = 0.95
