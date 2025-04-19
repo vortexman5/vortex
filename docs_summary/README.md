@@ -21,36 +21,37 @@ This directory contains a comprehensive summary of the Vortex framework document
 10. [Server Deployment Guide](server_deployment_guide.md) - Detailed guide for server deployment and configuration
 11. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
 12. [Linux Mint Installation](linux_mint_installation.md) - Specific installation guide for Linux Mint systems
+13. [Standalone Agent Setup](standalone_agent_setup.md) - Comprehensive guide for setting up Vortex as a standalone agent with full capabilities and no restrictions
 
 ## Knowledge and Learning
 
-13. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
-14. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
+14. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
+15. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
 
 ## Architecture and Design
 
-15. [Architecture Overview](architecture_overview.md) - Detailed overview of the Vortex architecture
-16. [LLM Coding Options](llm_coding_options.md) - Overview of LLM coding options and capabilities
+16. [Architecture Overview](architecture_overview.md) - Detailed overview of the Vortex architecture
+17. [LLM Coding Options](llm_coding_options.md) - Overview of LLM coding options and capabilities
 
 ## CLI Tools and Features
 
-17. [CLI Tool Guide](cli_tool_guide.md) - Guide to using the Vortex CLI tools
-18. [CLI Learning](cli_learning.md) - Information on CLI learning capabilities
-19. [CLI Roadmap](cli_roadmap.md) - Roadmap for CLI feature development
+18. [CLI Tool Guide](cli_tool_guide.md) - Guide to using the Vortex CLI tools
+19. [CLI Learning](cli_learning.md) - Information on CLI learning capabilities
+20. [CLI Roadmap](cli_roadmap.md) - Roadmap for CLI feature development
 
 ## Roadmaps and Future Development
 
-20. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
-21. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
-22. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
+21. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
+22. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
+23. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
 
 ## Microagent Knowledge
 
-23. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents
+24. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents
 
 ## Other Resources
 
-24. [TODO List](todo.md) - Current development tasks and priorities
+25. [TODO List](todo.md) - Current development tasks and priorities
 
 ## About This Summary
 
