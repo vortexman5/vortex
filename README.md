@@ -1,146 +1,300 @@
-<a name="readme-top"></a>
+# Vortex (OpenHands AI Framework)
 
-<div align="center">
-  <img src="./docs/static/img/logo.png" alt="Logo" width="200">
-  <h1 align="center">OpenHands: Code Less, Make More</h1>
-</div>
+## Overview
 
+Vortex is an implementation of the OpenHands AI framework, a powerful and flexible system designed to create, manage, and deploy AI agents. This framework provides a comprehensive set of tools and components for building sophisticated AI applications with state-of-the-art language models.
 
-<div align="center">
-  <a href="https://github.com/All-Hands-AI/OpenHands/graphs/contributors"><img src="https://img.shields.io/github/contributors/All-Hands-AI/OpenHands?style=for-the-badge&color=blue" alt="Contributors"></a>
-  <a href="https://github.com/All-Hands-AI/OpenHands/stargazers"><img src="https://img.shields.io/github/stars/All-Hands-AI/OpenHands?style=for-the-badge&color=blue" alt="Stargazers"></a>
-  <a href="https://codecov.io/github/All-Hands-AI/OpenHands?branch=main"><img alt="CodeCov" src="https://img.shields.io/codecov/c/github/All-Hands-AI/OpenHands?style=for-the-badge&color=blue"></a>
-  <a href="https://github.com/All-Hands-AI/OpenHands/blob/main/LICENSE"><img src="https://img.shields.io/github/license/All-Hands-AI/OpenHands?style=for-the-badge&color=blue" alt="MIT License"></a>
-  <br/>
-  <a href="https://join.slack.com/t/openhands-ai/shared_invite/zt-2ngejmfw6-9gW4APWOC9XUp1n~SiQ6iw"><img src="https://img.shields.io/badge/Slack-Join%20Us-red?logo=slack&logoColor=white&style=for-the-badge" alt="Join our Slack community"></a>
-  <a href="https://discord.gg/ESHStjSjD4"><img src="https://img.shields.io/badge/Discord-Join%20Us-purple?logo=discord&logoColor=white&style=for-the-badge" alt="Join our Discord community"></a>
-  <a href="https://github.com/All-Hands-AI/OpenHands/blob/main/CREDITS.md"><img src="https://img.shields.io/badge/Project-Credits-blue?style=for-the-badge&color=FFE165&logo=github&logoColor=white" alt="Credits"></a>
-  <br/>
-  <a href="https://docs.all-hands.dev/modules/usage/getting-started"><img src="https://img.shields.io/badge/Documentation-000?logo=googledocs&logoColor=FFE165&style=for-the-badge" alt="Check out the documentation"></a>
-  <a href="https://arxiv.org/abs/2407.16741"><img src="https://img.shields.io/badge/Paper%20on%20Arxiv-000?logoColor=FFE165&logo=arxiv&style=for-the-badge" alt="Paper on Arxiv"></a>
-  <a href="https://huggingface.co/spaces/OpenHands/evaluation"><img src="https://img.shields.io/badge/Benchmark%20score-000?logoColor=FFE165&logo=huggingface&style=for-the-badge" alt="Evaluation Benchmark Score"></a>
-  <hr>
-</div>
+![OpenHands System Architecture Diagram](docs/static/img/system_architecture_overview.png)
 
-Welcome to OpenHands (formerly OpenDevin), a platform for software development agents powered by AI.
+## Key Features
 
-OpenHands agents can do anything a human developer can: modify code, run commands, browse the web,
-call APIs, and yes—even copy code snippets from StackOverflow.
+- **Multiple LLM Support**: Seamlessly integrate with various language models including Claude, GPT-4, Gemini, and others
+- **Flexible Architecture**: Modular design allows for easy customization and extension
+- **Robust Memory System**: Sophisticated knowledge storage and retrieval mechanisms
+- **Secure Execution**: Sandboxed runtime environments for safe execution of code
+- **Scalable Deployment**: Deploy on custom servers with various configuration options
+- **Event-Driven Communication**: Central event stream for efficient component interaction
+- **Microagent Support**: Specialized agents for domain-specific knowledge and tasks
 
-Learn more at [docs.all-hands.dev](https://docs.all-hands.dev), or [sign up for OpenHands Cloud](https://app.all-hands.dev) to get started.
+## Table of Contents
 
-> [!IMPORTANT]
-> Using OpenHands for work? We'd love to chat! Fill out
-> [this short form](https://docs.google.com/forms/d/e/1FAIpQLSet3VbGaz8z32gW9Wm-Grl4jpt5WgMXPgJ4EDPVmCETCBpJtQ/viewform)
-> to join our Design Partner program, where you'll get early access to commercial features and the opportunity to provide input on our product roadmap.
+- [Architecture](#architecture)
+- [Models](#models)
+- [Knowledge Storage](#knowledge-storage)
+- [Pipelines](#pipelines)
+- [Restrictions and Security](#restrictions-and-security)
+- [Deployment](#deployment)
+- [Remote Access](#remote-access)
+- [Customization](#customization)
+- [Troubleshooting](#troubleshooting)
 
-![App screenshot](./docs/static/img/screenshot.png)
+## Architecture
 
-## ☁️ OpenHands Cloud
-The easiest way to get started with OpenHands is on [OpenHands Cloud](https://app.all-hands.dev),
-which comes with $50 in free credits for new users.
+The OpenHands framework consists of several key components that work together to create a flexible and powerful AI system:
 
-## 💻 Running OpenHands Locally
+### Core Components
 
-OpenHands can also run on your local system using Docker.
-See the [Running OpenHands](https://docs.all-hands.dev/modules/usage/installation) guide for
-system requirements and more information.
+- **LLM**: Brokers all interactions with large language models, supporting various providers through LiteLLM
+- **Agent**: Responsible for analyzing the current State and producing Actions
+- **AgentController**: Initializes the Agent, manages State, and drives the main execution loop
+- **State**: Represents the current state of the Agent's task, including history and plans
+- **EventStream**: Central hub for Events, enabling communication between components
+- **Runtime**: Executes Actions and returns Observations
+- **Server**: Manages OpenHands sessions over HTTP for frontend interaction
 
-> [!WARNING]
-> On a public network? See our [Hardened Docker Installation Guide](https://docs.all-hands.dev/modules/usage/runtimes/docker#hardened-docker-installation)
-> to secure your deployment by restricting network binding and implementing additional security measures.
+### Control Flow
 
+The basic loop that drives agents follows this pattern:
 
+```python
+while True:
+  prompt = agent.generate_prompt(state)
+  response = llm.completion(prompt)
+  action = agent.parse_response(response)
+  observation = runtime.run(action)
+  state = state.update(action, observation)
+```
+
+In practice, this is implemented through message passing via the EventStream, which serves as the backbone for all communication in OpenHands.
+
+## Models
+
+### Supported Language Models
+
+The framework supports multiple language models through a unified interface:
+
+#### Claude Models
+- claude-3-7-sonnet-20250219
+- claude-3-5-sonnet-20241022
+- claude-3-5-sonnet-20240620
+- claude-3-5-haiku-20241022
+- claude-3-haiku-20240307
+- claude-3-opus-20240229
+
+#### OpenAI Models
+- gpt-4o-mini
+- gpt-4o
+- gpt-4.1
+
+#### Anthropic Models
+- o1-2024-12-17
+- o3-mini-2025-01-31
+- o3-mini
+
+#### Google Models
+- gemini-2.5-pro
+
+### Model Capabilities
+
+Different models support various capabilities:
+
+1. **Cache Prompt Support**: Some models support caching prompts for efficiency
+2. **Function Calling Support**: Models that can use tools through function calling
+3. **Reasoning Effort Support**: Models that support explicit reasoning parameters
+
+## Knowledge Storage
+
+### Memory System
+
+The memory system consists of:
+
+1. **Short-Term History**: 
+   - Filters the event stream for context
+   - Condenses history when context limits are reached
+
+2. **Memory Condenser**:
+   - Summarizes chunks of events
+   - Prioritizes earlier events for summarization
+
+### Microagents
+
+Specialized components for knowledge retrieval:
+
+1. **Knowledge Microagents**: Domain-specific knowledge
+2. **Repo Microagents**: Repository-specific information
+
+### Storage Backends
+
+Multiple storage options for persistence:
+
+1. **Local Storage**: File-based local storage
+2. **S3 Storage**: Amazon S3 compatible storage
+3. **Google Cloud Storage**: Google Cloud backend
+4. **In-Memory Storage**: Temporary storage
+
+## Pipelines
+
+### Event-Driven Architecture
+
+The EventStream enables asynchronous communication between components:
+
+```
+Agent --Actions--> AgentController
+AgentController --State--> Agent
+AgentController --Actions--> EventStream
+EventStream --Observations--> AgentController
+Runtime --Observations--> EventStream
+EventStream --Actions--> Runtime
+Frontend --Actions--> EventStream
+```
+
+### Key Pipeline Components
+
+1. **Agent Controller Pipeline**: Manages state and drives execution
+2. **Runtime Pipeline**: Executes actions in sandboxed environments
+3. **Memory Pipeline**: Handles knowledge storage and retrieval
+4. **Server Pipeline**: Manages HTTP sessions and frontend communication
+
+## Restrictions and Security
+
+### Runtime Restrictions
+
+- **Sandbox Isolation**: Containerized execution environments
+- **Resource Limitations**: Limits on execution time, memory, CPU, and disk space
+- **Command Filtering**: Blocks potentially dangerous commands
+
+### LLM Restrictions
+
+- **Token Limits**: Prevents excessive resource usage
+- **Content Filtering**: Blocks harmful or inappropriate content
+- **Rate Limiting**: Prevents API abuse
+
+### Authentication and Authorization
+
+- User authentication
+- Role-based access control
+- API key management
+- Session management
+
+## Deployment
+
+### Hardware Requirements
+
+#### Minimum Requirements
+- **CPU**: 4+ cores (8+ recommended for production)
+- **RAM**: 16GB minimum (32GB+ recommended for production)
+- **Storage**: 50GB SSD (100GB+ recommended for production)
+- **Network**: Stable internet connection with at least 10Mbps upload/download
+
+#### Recommended Production Setup
+- **CPU**: 16+ cores, preferably with AVX2 support
+- **RAM**: 64GB+
+- **Storage**: 500GB+ SSD/NVMe
+- **GPU**: NVIDIA GPU with 8GB+ VRAM (optional, for local model inference)
+- **Network**: 100Mbps+ connection with low latency
+
+### Software Requirements
+
+- **Operating System**: Ubuntu 22.04 LTS (recommended)
+- **Docker**: version 20.10.x or newer
+- **Docker Compose**: version 2.x or newer
+- **Python**: version 3.12.x
+- **Node.js**: version 20.x or newer
+
+### Installation Steps
+
+1. **System Preparation**:
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   sudo apt install -y build-essential curl git python3-pip python3-dev
+   # Install Docker, Docker Compose, Node.js
+   ```
+
+2. **Clone the Repository**:
+   ```bash
+   git clone https://codeberg.org/Adamcatholic/vortex.git
+   cd vortex
+   pip3 install poetry
+   poetry install
+   ```
+
+3. **Configuration**:
+   ```bash
+   cp config.template.toml config.toml
+   # Edit configuration file as needed
+   ```
+
+4. **Docker Deployment**:
+   ```bash
+   docker-compose up -d
+   ```
+
+## Remote Access
+
+### Web Interface
+
+Access from any device with a web browser:
+- Navigate to `https://your-domain.com` or `http://your-server-ip:8000`
+
+### API Access
+
+For programmatic access:
 ```bash
-docker pull docker.all-hands.dev/all-hands-ai/runtime:0.33-nikolaik
-
-docker run -it --rm --pull=always \
-    -e SANDBOX_RUNTIME_CONTAINER_IMAGE=docker.all-hands.dev/all-hands-ai/runtime:0.33-nikolaik \
-    -e LOG_ALL_EVENTS=true \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v ~/.openhands-state:/.openhands-state \
-    -p 3000:3000 \
-    --add-host host.docker.internal:host-gateway \
-    --name openhands-app \
-    docker.all-hands.dev/all-hands-ai/openhands:0.33
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_auth_token" \
+  -d '{"message": "Hello, OpenHands!"}' \
+  https://your-domain.com/api/v1/message
 ```
 
-You'll find OpenHands running at [http://localhost:3000](http://localhost:3000)!
+### Mobile Access
 
-When you open the application, you'll be asked to choose an LLM provider and add an API key.
-[Anthropic's Claude 3.5 Sonnet](https://www.anthropic.com/api) (`anthropic/claude-3-5-sonnet-20241022`)
-works best, but you have [many options](https://docs.all-hands.dev/modules/usage/llms).
+- Responsive web interface works on mobile browsers
+- Create home screen shortcuts for better experience
 
-## 💡 Other ways to run OpenHands
+## Customization
 
-> [!CAUTION]
-> OpenHands is meant to be run by a single user on their local workstation.
-> It is not appropriate for multi-tenant deployments where multiple users share the same instance. There is no built-in authentication, isolation, or scalability.
->
-> If you're interested in running OpenHands in a multi-tenant environment, please
-> [get in touch with us](https://docs.google.com/forms/d/e/1FAIpQLSet3VbGaz8z32gW9Wm-Grl4jpt5WgMXPgJ4EDPVmCETCBpJtQ/viewform)
-> for advanced deployment options.
+### Extending the Pipeline
 
-You can also [connect OpenHands to your local filesystem](https://docs.all-hands.dev/modules/usage/runtimes/docker#connecting-to-your-filesystem),
-run OpenHands in a scriptable [headless mode](https://docs.all-hands.dev/modules/usage/how-to/headless-mode),
-interact with it via a [friendly CLI](https://docs.all-hands.dev/modules/usage/how-to/cli-mode),
-or run it on tagged issues with [a github action](https://docs.all-hands.dev/modules/usage/how-to/github-action).
+1. Create custom Event types
+2. Implement custom EventStream subscribers
+3. Develop specialized Agents
+4. Create custom Runtime environments
 
-Visit [Running OpenHands](https://docs.all-hands.dev/modules/usage/installation) for more information and setup instructions.
+### Modifying Restrictions
 
-If you want to modify the OpenHands source code, check out [Development.md](https://github.com/All-Hands-AI/OpenHands/blob/main/Development.md).
+Adjust restrictions through:
+1. Configuration files (config.toml)
+2. Environment variables
+3. Custom security policies
 
-Having issues? The [Troubleshooting Guide](https://docs.all-hands.dev/modules/usage/troubleshooting) can help.
+### Adding Knowledge Databases
 
-## 📖 Documentation
+1. Create custom microagents in the `microagents` directory
+2. Update configuration to include new microagents
+3. Implement knowledge retrieval logic
 
-To learn more about the project, and for tips on using OpenHands,
-check out our [documentation](https://docs.all-hands.dev/modules/usage/getting-started).
+## Troubleshooting
 
-There you'll find resources on how to use different LLM providers,
-troubleshooting resources, and advanced configuration options.
+### Common Issues
 
-## 🤝 How to Join the Community
+1. **Connection Refused**
+   - Check if the server is running
+   - Verify firewall settings
 
-OpenHands is a community-driven project, and we welcome contributions from everyone. We do most of our communication
-through Slack, so this is the best place to start, but we also are happy to have you contact us on Discord or Github:
+2. **Authentication Failures**
+   - Verify auth token configuration
+   - Check API request headers
 
-- [Join our Slack workspace](https://join.slack.com/t/openhands-ai/shared_invite/zt-2ngejmfw6-9gW4APWOC9XUp1n~SiQ6iw) - Here we talk about research, architecture, and future development.
-- [Join our Discord server](https://discord.gg/ESHStjSjD4) - This is a community-run server for general discussion, questions, and feedback.
-- [Read or post Github Issues](https://github.com/All-Hands-AI/OpenHands/issues) - Check out the issues we're working on, or add your own ideas.
+3. **Performance Issues**
+   - Monitor system resources
+   - Check container resource usage
 
-See more about the community in [COMMUNITY.md](./COMMUNITY.md) or find details on contributing in [CONTRIBUTING.md](./CONTRIBUTING.md).
+4. **LLM API Errors**
+   - Verify API keys
+   - Check provider status
 
-## 📈 Progress
+## Contributing
 
-See the monthly OpenHands roadmap [here](https://github.com/orgs/All-Hands-AI/projects/1) (updated at the maintainer's meeting at the end of each month).
+We welcome contributions to the Vortex project! Please see our contributing guidelines for more information.
 
-<p align="center">
-  <a href="https://star-history.com/#All-Hands-AI/OpenHands&Date">
-    <img src="https://api.star-history.com/svg?repos=All-Hands-AI/OpenHands&type=Date" width="500" alt="Star History Chart">
-  </a>
-</p>
+## License
 
-## 📜 License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Distributed under the MIT License. See [`LICENSE`](./LICENSE) for more information.
+---
 
-## 🙏 Acknowledgements
-
-OpenHands is built by a large number of contributors, and every contribution is greatly appreciated! We also build upon other open source projects, and we are deeply thankful for their work.
-
-For a list of open source projects and licenses used in OpenHands, please see our [CREDITS.md](./CREDITS.md) file.
-
-## 📚 Cite
-
-```
-@misc{openhands,
-      title={{OpenHands: An Open Platform for AI Software Developers as Generalist Agents}},
-      author={Xingyao Wang and Boxuan Li and Yufan Song and Frank F. Xu and Xiangru Tang and Mingchen Zhuge and Jiayi Pan and Yueqi Song and Bowen Li and Jaskirat Singh and Hoang H. Tran and Fuqiang Li and Ren Ma and Mingzhang Zheng and Bill Qian and Yanjun Shao and Niklas Muennighoff and Yizhe Zhang and Binyuan Hui and Junyang Lin and Robert Brennan and Hao Peng and Heng Ji and Graham Neubig},
-      year={2024},
-      eprint={2407.16741},
-      archivePrefix={arXiv},
-      primaryClass={cs.SE},
-      url={https://arxiv.org/abs/2407.16741},
-}
-```
+For more detailed information, please refer to the following documentation:
+- [Models and Knowledge Storage](models_and_knowledge_storage.md)
+- [Pipelines and Restrictions](pipelines_and_restrictions.md)
+- [Deployment Guide](deployment_guide.md)
