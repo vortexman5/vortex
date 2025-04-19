@@ -12,6 +12,7 @@ Welcome to the Vortex (OpenHands AI Framework) documentation. This collection of
 ### Technical Documentation
 
 - [Architecture Overview](architecture_overview.md) - Detailed explanation of the Vortex architecture and how components interact
+- [Learning and Knowledge Management](learning_and_knowledge.md) - How Vortex learns, stores knowledge, and improves over time
 
 ## External Resources
 
