@@ -1,6 +1,6 @@
-# Vortex Framework Documentation Summary
+# Vortex Framework Documentation
 
-This directory contains a comprehensive summary of the Vortex framework documentation, organized into several sections covering different aspects of the framework.
+This directory contains a comprehensive documentation of the Vortex framework, organized into several sections covering different aspects of the framework.
 
 ## Table of Contents
 
@@ -15,49 +15,56 @@ This directory contains a comprehensive summary of the Vortex framework document
 7. [Runtime Environment](07_runtime_environment.md) - Information on the secure runtime environment
 8. [Getting Started](08_getting_started.md) - Guide to installing and using the Vortex framework
 
-## Deployment and Setup Guides
+## Comprehensive Guides
 
-9. [Remote Server Deployment](remote_server_deployment.md) - Guide to deploying Vortex on a remote server with full capabilities
-10. [Server Deployment Guide](server_deployment_guide.md) - Detailed guide for server deployment and configuration
-11. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
-12. [Linux Mint Installation](linux_mint_installation.md) - Specific installation guide for Linux Mint systems
-13. [Standalone Agent Setup](standalone_agent_setup.md) - Comprehensive guide for setting up Vortex as a standalone agent with full capabilities and no restrictions
+9. [Comprehensive CLI Guide](comprehensive_cli_guide.md) - Complete guide to using and extending the Vortex CLI
+10. [Comprehensive Deployment Guide](comprehensive_deployment_guide.md) - Complete guide to deploying Vortex in various configurations
 
 ## Knowledge and Learning
 
-14. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
-15. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
+11. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
+12. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
 
 ## Architecture and Design
 
-16. [Architecture Overview](architecture_overview.md) - Detailed overview of the Vortex architecture
-17. [LLM Coding Options](llm_coding_options.md) - Overview of LLM coding options and capabilities
-
-## CLI Tools and Features
-
-18. [CLI Tool Guide](cli_tool_guide.md) - Guide to using the Vortex CLI tools
-19. [CLI Learning](cli_learning.md) - Information on CLI learning capabilities
-20. [CLI Roadmap](cli_roadmap.md) - Roadmap for CLI feature development
+13. [Architecture Overview](architecture_overview.md) - Detailed overview of the Vortex architecture
+14. [LLM Coding Options](llm_coding_options.md) - Overview of LLM coding options and capabilities
 
 ## Roadmaps and Future Development
 
-21. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
-22. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
-23. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
+15. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
+16. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
+17. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
 
 ## Microagent Knowledge
 
-24. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents
+18. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents
 
 ## Other Resources
 
-25. [TODO List](todo.md) - Current development tasks and priorities
+19. [TODO List](todo.md) - Current development tasks and priorities
 
-## About This Summary
+## About This Documentation
 
-This documentation summary was created by analyzing the Vortex framework codebase and documentation. It provides a comprehensive overview of the framework's architecture, components, and usage.
+This documentation was created by analyzing the Vortex framework codebase and documentation. It provides a comprehensive overview of the framework's architecture, components, and usage.
 
-The summary is organized to help users understand the framework from a high level down to specific implementation details. Each section focuses on a specific aspect of the framework, with code examples and explanations where appropriate.
+The documentation is organized to help users understand the framework from a high level down to specific implementation details. Each section focuses on a specific aspect of the framework, with code examples and explanations where appropriate.
+
+## Consolidated Documentation
+
+The following files have been consolidated into comprehensive guides:
+
+- **Comprehensive CLI Guide** combines:
+  - CLI Tool Guide
+  - CLI Learning
+  - CLI Roadmap
+
+- **Comprehensive Deployment Guide** combines:
+  - Remote Server Deployment
+  - Server Deployment Guide
+  - Standalone Agent Setup
+  - Linux Mint Installation
+  - Database Setup Guide
 
 ## Key Features of Vortex
 
