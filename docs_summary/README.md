@@ -16,6 +16,7 @@ This directory contains a comprehensive summary of the Vortex framework document
 10. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
 11. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
 12. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
+13. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
 
 ## About This Summary
 
