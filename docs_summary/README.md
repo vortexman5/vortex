@@ -14,6 +14,7 @@ This directory contains a comprehensive summary of the Vortex framework document
 8. [Getting Started](08_getting_started.md) - Guide to installing and using the Vortex framework
 9. [Remote Server Deployment](remote_server_deployment.md) - Guide to deploying Vortex on a remote server with full capabilities
 10. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
+11. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
 
 ## About This Summary
 
