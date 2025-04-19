@@ -49,7 +49,7 @@ Vortex uses a multi-stage architecture for knowledge ingestion:
 
 ## Setting Up the Knowledge Database
 
-Before ingesting documents, you need to set up a vector database to store the knowledge. Follow these steps:
+Before ingesting documents, you need to set up a vector database to store the knowledge. You can use either a local or remote database setup.
 
 ### 1. Install Required Dependencies
 
@@ -57,11 +57,162 @@ Before ingesting documents, you need to set up a vector database to store the kn
 pip install pgvector psycopg2-binary pypdf langchain sentence-transformers
 ```
 
-### 2. Set Up PostgreSQL with pgvector
+### 2. Local Database Setup
 
-If you haven't already set up PostgreSQL with the pgvector extension, follow the instructions in the [Database Setup Guide](database_setup_guide.md).
+If you haven't already set up PostgreSQL with the pgvector extension locally, follow the instructions in the [Database Setup Guide](database_setup_guide.md).
 
-### 3. Create Knowledge Database Schema
+### 3. Remote Database Setup
+
+For production environments or when working with large knowledge bases, a remote database setup is recommended. This section provides detailed instructions for setting up a remote PostgreSQL database with pgvector.
+
+#### Option 1: Self-hosted Remote PostgreSQL
+
+1. **Provision a server** for your database (AWS EC2, DigitalOcean Droplet, etc.)
+
+2. **Install PostgreSQL on the remote server**:
+
+```bash
+# Connect to your remote server
+ssh user@your-remote-server
+
+# Update package lists
+sudo apt update
+
+# Install PostgreSQL
+sudo apt install -y postgresql postgresql-contrib
+
+# Install development packages needed for pgvector
+sudo apt install -y postgresql-server-dev-14 build-essential git
+
+# Clone and install pgvector
+git clone https://github.com/pgvector/pgvector.git
+cd pgvector
+make
+sudo make install
+cd ..
+```
+
+3. **Configure PostgreSQL for remote access**:
+
+```bash
+# Edit PostgreSQL configuration
+sudo nano /etc/postgresql/14/main/postgresql.conf
+```
+
+Add or modify these lines:
+```
+listen_addresses = '*'          # Listen on all interfaces
+max_connections = 100           # Adjust based on your needs
+shared_buffers = 1GB            # Adjust based on server RAM (25% of RAM)
+effective_cache_size = 3GB      # Adjust based on server RAM (75% of RAM)
+work_mem = 64MB                 # Adjust based on your workload
+maintenance_work_mem = 256MB    # Adjust for maintenance operations
+```
+
+4. **Configure client authentication**:
+
+```bash
+# Edit client authentication configuration
+sudo nano /etc/postgresql/14/main/pg_hba.conf
+```
+
+Add this line to allow connections from your Vortex server (replace with your actual IP):
+```
+host    vortex_knowledge    vortex    your_vortex_server_ip/32    md5
+```
+
+5. **Restart PostgreSQL to apply changes**:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+6. **Create database and user**:
+
+```bash
+# Connect to PostgreSQL as postgres user
+sudo -u postgres psql
+
+# Create user and database
+CREATE USER vortex WITH PASSWORD 'your_secure_password';
+CREATE DATABASE vortex_knowledge;
+GRANT ALL PRIVILEGES ON DATABASE vortex_knowledge TO vortex;
+
+# Connect to the new database
+\c vortex_knowledge
+
+# Enable pgvector extension
+CREATE EXTENSION vector;
+
+# Exit PostgreSQL
+\q
+```
+
+7. **Configure firewall to allow PostgreSQL connections**:
+
+```bash
+sudo ufw allow from your_vortex_server_ip to any port 5432 proto tcp
+```
+
+#### Option 2: Using AWS RDS with pgvector
+
+AWS RDS now supports the pgvector extension, making it an excellent choice for a managed database solution.
+
+1. **Create a parameter group**:
+   - Go to the AWS RDS console
+   - Navigate to "Parameter groups" and click "Create parameter group"
+   - Select the PostgreSQL family that matches your version (e.g., postgres14)
+   - Give it a name like "pgvector-params"
+   - After creation, edit the parameter group and set `shared_preload_libraries` to include `pgvector`
+
+2. **Create an RDS instance**:
+   - Go to the AWS RDS console
+   - Click "Create database"
+   - Select PostgreSQL
+   - Choose your desired settings (instance size, storage, etc.)
+   - Under "Additional configuration", select the parameter group you created
+   - Set up security groups to allow connections from your Vortex server
+
+3. **Enable the pgvector extension**:
+   - Connect to your RDS instance using a PostgreSQL client:
+     ```bash
+     psql -h your-rds-endpoint.rds.amazonaws.com -U postgres -d postgres
+     ```
+   - Create the database and enable pgvector:
+     ```sql
+     CREATE DATABASE vortex_knowledge;
+     \c vortex_knowledge
+     CREATE EXTENSION vector;
+     ```
+
+4. **Create a dedicated user**:
+   ```sql
+   CREATE USER vortex WITH PASSWORD 'your_secure_password';
+   GRANT ALL PRIVILEGES ON DATABASE vortex_knowledge TO vortex;
+   ```
+
+#### Option 3: Using Managed PostgreSQL Services
+
+Many cloud providers offer managed PostgreSQL services that can be configured to use pgvector:
+
+- **Google Cloud SQL**:
+  1. Create a PostgreSQL instance
+  2. Connect to it and run `CREATE EXTENSION vector;`
+  3. Configure network access to allow connections from your Vortex server
+
+- **Azure Database for PostgreSQL**:
+  1. Create a PostgreSQL flexible server
+  2. Enable the pgvector extension through the Azure portal or by connecting and running `CREATE EXTENSION vector;`
+  3. Configure firewall rules to allow connections from your Vortex server
+
+- **Supabase**:
+  1. Create a new Supabase project
+  2. Enable the pgvector extension from the database settings
+  3. Use the connection details provided in the dashboard
+
+### 4. Create Knowledge Database Schema
+
+After connecting to your database (local or remote), create the necessary schema:
 
 ```sql
 -- Connect to your database
@@ -94,6 +245,37 @@ CREATE TABLE IF NOT EXISTS document_chunks (
 CREATE INDEX ON document_chunks USING GIN (metadata jsonb_path_ops);
 CREATE INDEX ON document_chunks (document_id, chunk_index);
 CREATE INDEX ON documents USING GIN (tags);
+
+-- Create an index for vector similarity search
+CREATE INDEX ON document_chunks USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
+```
+
+### 5. Remote Database Configuration
+
+Update your `db_config.json` to point to the remote database:
+
+```json
+{
+    "host": "your-database-server.example.com",
+    "port": 5432,
+    "database": "vortex_knowledge",
+    "user": "vortex",
+    "password": "your_secure_password",
+    "ssl_mode": "require"  // Use "require" for secure connections
+}
+```
+
+For AWS RDS, the host would be your RDS endpoint:
+
+```json
+{
+    "host": "your-instance.xxxxxxxxxxxx.region.rds.amazonaws.com",
+    "port": 5432,
+    "database": "vortex_knowledge",
+    "user": "vortex",
+    "password": "your_secure_password",
+    "ssl_mode": "require"
+}
 ```
 
 ## Document Processing Pipeline
@@ -694,7 +876,9 @@ python document_processor.py --search "How do transformer models work?" --limit 
 
 To integrate the knowledge database with Vortex, you need to configure Vortex to use the vector database for knowledge retrieval.
 
-Create or modify your Vortex configuration file:
+#### Local Database Configuration
+
+Create or modify your Vortex configuration file for a local database:
 
 ```toml
 [database]
@@ -721,6 +905,122 @@ enable_external_knowledge = true
 knowledge_sources = ["database.vector"]
 max_knowledge_results = 5
 knowledge_similarity_threshold = 0.7
+```
+
+#### Remote Database Configuration
+
+For a remote database, modify your Vortex configuration file:
+
+```toml
+[database]
+enable_database_storage = true
+
+[database.vector]
+type = "postgresql"
+host = "your-database-server.example.com"  # Remote database hostname or IP
+port = 5432
+user = "vortex"
+password = "your_secure_password"
+database = "vortex_knowledge"
+table_name = "document_chunks"
+vector_dimension = 1536
+ssl_mode = "require"  # Enable SSL for secure connections
+connection_timeout = 10  # Connection timeout in seconds
+pool_size = 5  # Connection pool size
+
+[memory]
+type = "database"
+persistence = true
+use_vector_db = true
+vector_db_config = "database.vector"
+
+[knowledge]
+enable_external_knowledge = true
+knowledge_sources = ["database.vector"]
+max_knowledge_results = 5
+knowledge_similarity_threshold = 0.7
+knowledge_cache_ttl = 3600  # Cache results for 1 hour to reduce database load
+```
+
+#### AWS RDS Configuration
+
+For AWS RDS, your configuration would look like:
+
+```toml
+[database]
+enable_database_storage = true
+
+[database.vector]
+type = "postgresql"
+host = "your-instance.xxxxxxxxxxxx.region.rds.amazonaws.com"  # RDS endpoint
+port = 5432
+user = "vortex"
+password = "your_secure_password"
+database = "vortex_knowledge"
+table_name = "document_chunks"
+vector_dimension = 1536
+ssl_mode = "require"
+pool_size = 10  # Larger pool for production environments
+
+[memory]
+type = "database"
+persistence = true
+use_vector_db = true
+vector_db_config = "database.vector"
+
+[knowledge]
+enable_external_knowledge = true
+knowledge_sources = ["database.vector"]
+max_knowledge_results = 10  # Retrieve more results for better context
+knowledge_similarity_threshold = 0.65  # Slightly lower threshold for more results
+knowledge_cache_ttl = 7200  # Cache results for 2 hours
+```
+
+#### High-Availability Configuration
+
+For mission-critical deployments with high availability requirements:
+
+```toml
+[database]
+enable_database_storage = true
+
+[database.vector]
+type = "postgresql"
+host = "your-primary-db.example.com"
+port = 5432
+user = "vortex"
+password = "your_secure_password"
+database = "vortex_knowledge"
+table_name = "document_chunks"
+vector_dimension = 1536
+ssl_mode = "require"
+pool_size = 20
+max_overflow = 10  # Allow up to 10 additional connections when pool is full
+pool_timeout = 30  # Wait up to 30 seconds for a connection from the pool
+pool_recycle = 3600  # Recycle connections after 1 hour
+
+# Replica configuration for read operations
+[database.vector.replica]
+enabled = true
+host = "your-replica-db.example.com"
+port = 5432
+user = "vortex_readonly"
+password = "your_readonly_password"
+database = "vortex_knowledge"
+
+[memory]
+type = "database"
+persistence = true
+use_vector_db = true
+vector_db_config = "database.vector"
+
+[knowledge]
+enable_external_knowledge = true
+knowledge_sources = ["database.vector"]
+max_knowledge_results = 10
+knowledge_similarity_threshold = 0.7
+knowledge_cache_ttl = 3600
+enable_fallback = true  # Enable fallback to other knowledge sources if database is unavailable
 ```
 
 ### 3. Creating a Knowledge Retrieval Microagent
@@ -1146,11 +1446,26 @@ def _synthesize_knowledge(self, items):
 
 **Problem**: Unable to connect to the PostgreSQL database.
 
-**Solution**:
+**Solution for Local Database**:
 - Verify that PostgreSQL is running: `sudo systemctl status postgresql`
 - Check database credentials in `db_config.json`
 - Ensure the database and user exist: `sudo -u postgres psql -c "\du"`
 - Check PostgreSQL logs: `sudo tail -f /var/log/postgresql/postgresql-14-main.log`
+
+**Solution for Remote Database**:
+- Verify network connectivity: `ping your-database-server.example.com`
+- Check if the port is accessible: `telnet your-database-server.example.com 5432`
+- Verify firewall rules allow connections: `sudo ufw status` (on the database server)
+- Check that the database server is configured to accept remote connections
+- Verify SSL settings if using secure connections
+- Check database server logs: `sudo tail -f /var/log/postgresql/postgresql-14-main.log` (on the database server)
+
+**Solution for AWS RDS**:
+- Check security group settings to ensure your IP is allowed
+- Verify that the RDS instance is in the "Available" state
+- Check that the parameter group with pgvector is correctly applied
+- Try connecting with psql to isolate the issue: `psql -h your-rds-endpoint.rds.amazonaws.com -U vortex -d vortex_knowledge`
+- Check the RDS logs in the AWS RDS console
 
 #### 2. Embedding Generation Errors
 
@@ -1161,6 +1476,7 @@ def _synthesize_knowledge(self, items):
 - Try a smaller model like "all-MiniLM-L6-v2" instead of larger models
 - Process documents in smaller batches
 - Check for encoding issues in your documents
+- For remote processing, consider using a machine with more resources or GPU acceleration
 
 #### 3. Document Processing Failures
 
@@ -1173,6 +1489,7 @@ def _synthesize_knowledge(self, items):
   - For HTML: `pip install beautifulsoup4`
 - Check file encoding and convert if necessary: `iconv -f ISO-8859-1 -t UTF-8 input.txt > output.txt`
 - For large files, try increasing chunk size or processing in parts
+- For remote processing, check disk space and memory availability
 
 #### 4. Knowledge Not Being Retrieved
 
@@ -1184,6 +1501,46 @@ def _synthesize_knowledge(self, items):
 - Ensure the microagent is properly registered
 - Test direct retrieval using the search function in `document_processor.py`
 - Check that your query is relevant to the ingested knowledge
+
+#### 5. Remote Database Performance Issues
+
+**Problem**: Slow performance when using a remote database.
+
+**Solution**:
+- Optimize your PostgreSQL configuration for your server's resources
+- Ensure proper indexes are created, especially the vector similarity index
+- Increase connection pool size in the Vortex configuration
+- Enable result caching by setting `knowledge_cache_ttl` in the configuration
+- Consider using a read replica for query operations
+- Monitor database performance with tools like pgAdmin or pg_stat_statements
+- Consider upgrading to a more powerful database server if needed
+
+#### 6. SSL/TLS Connection Issues
+
+**Problem**: SSL/TLS connection errors when connecting to remote database.
+
+**Solution**:
+- Verify SSL is enabled on the database server
+- Check that the correct SSL certificates are installed
+- Try different SSL modes in the configuration:
+  - `require`: Requires SSL but doesn't verify certificates
+  - `verify-ca`: Verifies that the server certificate is signed by a trusted CA
+  - `verify-full`: Verifies that the server certificate is signed by a trusted CA and that the server hostname matches the certificate
+- For AWS RDS, use `require` as the SSL mode
+- Check if you need to provide a client certificate
+
+#### 7. High Database Load
+
+**Problem**: High load on the database server during knowledge retrieval.
+
+**Solution**:
+- Implement caching in your application
+- Increase the `knowledge_cache_ttl` value in the Vortex configuration
+- Optimize your vector search by adjusting the `lists` parameter in the IVFFlat index
+- Consider using a more powerful database server
+- Implement connection pooling with appropriate pool size
+- Use read replicas for query operations
+- Monitor and optimize slow queries
 
 ## Conclusion
 
