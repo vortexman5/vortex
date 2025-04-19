@@ -12,6 +12,7 @@ This directory contains a comprehensive summary of the Vortex framework document
 6. [Agent System](06_agent_system.md) - Details on the agent architecture and implementation
 7. [Runtime Environment](07_runtime_environment.md) - Information on the secure runtime environment
 8. [Getting Started](08_getting_started.md) - Guide to installing and using the Vortex framework
+9. [Remote Server Deployment](remote_server_deployment.md) - Guide to deploying Vortex on a remote server with full capabilities
 
 ## About This Summary
 
