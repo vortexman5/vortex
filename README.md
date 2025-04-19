@@ -339,8 +339,24 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-For more detailed information, please refer to the following documentation:
-- [Models and Knowledge Storage](docs/models_and_knowledge_storage.md)
-- [Pipelines and Restrictions](docs/pipelines_and_restrictions.md)
-- [Deployment Guide](docs/deployment_guide.md)
-- [Admin Mode Guide](docs/admin_mode.md)
+## Documentation
+
+For comprehensive documentation, please refer to the [docs_summary](docs_summary/README.md) directory, which contains:
+
+### Core Documentation
+- [Overview](docs_summary/01_overview.md) - Introduction to the Vortex framework
+- [Memory System](docs_summary/02_memory_system.md) - Details on the memory system architecture
+- [Reinforcement Learning](docs_summary/03_reinforcement_learning.md) - Information on the reinforcement learning capabilities
+- [Microagents](docs_summary/04_microagents.md) - Overview of the microagent system
+- [LLM Integration](docs_summary/05_llm_integration.md) - Details on LLM integration and capabilities
+- [Agent System](docs_summary/06_agent_system.md) - Information on the agent system architecture
+- [Runtime Environment](docs_summary/07_runtime_environment.md) - Information on the secure runtime environment
+- [Getting Started](docs_summary/08_getting_started.md) - Guide to installing and using the Vortex framework
+
+### Comprehensive Guides
+- [Comprehensive CLI Guide](docs_summary/comprehensive_cli_guide.md) - Complete guide to using and extending the Vortex CLI
+- [Comprehensive Deployment Guide](docs_summary/comprehensive_deployment_guide.md) - Complete guide to deploying Vortex in various configurations
+- [Knowledge Ingestion Guide](docs_summary/knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
+
+### Additional Resources
+- [Admin Mode Guide](docs/admin_mode.md) - Guide to using admin mode for unrestricted capabilities
