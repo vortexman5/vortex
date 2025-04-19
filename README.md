@@ -4,7 +4,7 @@
 
 Vortex is an implementation of the OpenHands AI framework, a powerful and flexible system designed to create, manage, and deploy AI agents. This framework provides a comprehensive set of tools and components for building sophisticated AI applications with state-of-the-art language models.
 
-![OpenHands System Architecture Diagram](docs/static/img/system_architecture_overview.png)
+![OpenHands System Architecture Diagram](docs_summary/static/img/system_architecture_overview.png)
 
 ## Key Features
 
