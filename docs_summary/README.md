@@ -4,6 +4,8 @@ This directory contains a comprehensive summary of the Vortex framework document
 
 ## Table of Contents
 
+## Core Documentation
+
 1. [Overview](01_overview.md) - Introduction to the Vortex framework and its key components
 2. [Memory System](02_memory_system.md) - Details on the memory management and knowledge retrieval system
 3. [Reinforcement Learning](03_reinforcement_learning.md) - Information on the reinforcement learning capabilities
@@ -12,11 +14,43 @@ This directory contains a comprehensive summary of the Vortex framework document
 6. [Agent System](06_agent_system.md) - Details on the agent architecture and implementation
 7. [Runtime Environment](07_runtime_environment.md) - Information on the secure runtime environment
 8. [Getting Started](08_getting_started.md) - Guide to installing and using the Vortex framework
+
+## Deployment and Setup Guides
+
 9. [Remote Server Deployment](remote_server_deployment.md) - Guide to deploying Vortex on a remote server with full capabilities
-10. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
-11. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
-12. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
+10. [Server Deployment Guide](server_deployment_guide.md) - Detailed guide for server deployment and configuration
+11. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
+12. [Linux Mint Installation](linux_mint_installation.md) - Specific installation guide for Linux Mint systems
+
+## Knowledge and Learning
+
 13. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
+14. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
+
+## Architecture and Design
+
+15. [Architecture Overview](architecture_overview.md) - Detailed overview of the Vortex architecture
+16. [LLM Coding Options](llm_coding_options.md) - Overview of LLM coding options and capabilities
+
+## CLI Tools and Features
+
+17. [CLI Tool Guide](cli_tool_guide.md) - Guide to using the Vortex CLI tools
+18. [CLI Learning](cli_learning.md) - Information on CLI learning capabilities
+19. [CLI Roadmap](cli_roadmap.md) - Roadmap for CLI feature development
+
+## Roadmaps and Future Development
+
+20. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
+21. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
+22. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
+
+## Microagent Knowledge
+
+23. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents
+
+## Other Resources
+
+24. [TODO List](todo.md) - Current development tasks and priorities
 
 ## About This Summary
 
