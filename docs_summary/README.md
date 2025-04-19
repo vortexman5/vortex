@@ -15,6 +15,7 @@ This directory contains a comprehensive summary of the Vortex framework document
 9. [Remote Server Deployment](remote_server_deployment.md) - Guide to deploying Vortex on a remote server with full capabilities
 10. [Database Setup Guide](database_setup_guide.md) - Comprehensive guide for setting up knowledge databases and other data storage
 11. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
+12. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
 
 ## About This Summary
 
