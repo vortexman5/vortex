@@ -1,6 +1,6 @@
 # Vortex CLI Enhancement TODO List
 
-This document outlines the tasks needed to implement the missing features and capabilities in the Vortex CLI mode, with a focus on learning and knowledge management. For a more detailed roadmap, see [CLI Roadmap](documentation/cli_roadmap.md).
+This document outlines the tasks needed to implement the missing features and capabilities in the Vortex CLI mode, with a focus on learning and knowledge management. For a more detailed roadmap, see [Comprehensive CLI Guide](comprehensive_cli_guide.md).
 
 ## High Priority Tasks
 
