@@ -38,7 +38,16 @@ This directory contains a comprehensive documentation of the Vortex framework, o
 
 ## Microagent Knowledge
 
-18. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents
+18. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents, including:
+    - [Add Agent](microagent_knowledge/add_agent.md) - Knowledge for adding new agents
+    - [Docker](microagent_knowledge/docker.md) - Docker-related knowledge
+    - [GitHub](microagent_knowledge/github.md) - GitHub integration knowledge
+    - [GitLab](microagent_knowledge/gitlab.md) - GitLab integration knowledge
+    - [Kubernetes](microagent_knowledge/kubernetes.md) - Kubernetes knowledge
+    - [NPM](microagent_knowledge/npm.md) - Node Package Manager knowledge
+    - [PDFLaTeX](microagent_knowledge/pdflatex.md) - PDFLaTeX knowledge
+    - [Security](microagent_knowledge/security.md) - Security best practices
+    - [Swift on Linux](microagent_knowledge/swift-linux.md) - Swift programming on Linux
 
 ## Other Resources
 
