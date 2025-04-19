@@ -1,0 +1,298 @@
+"""
+Web interface for demonstrating the reinforcement learning module.
+
+This script creates a simple web interface for interacting with the RL environment.
+"""
+
+import os
+import sys
+import json
+import argparse
+import requests
+from typing import Dict, List, Any, Optional
+
+from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+import uvicorn
+
+# Add the parent directory to the path to import openhands
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+app = FastAPI()
+
+# Create a templates directory
+os.makedirs("templates", exist_ok=True)
+
+# Create a templates object
+templates = Jinja2Templates(directory="templates")
+
+# Create the HTML template
+template_content = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenHands RL Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .panel {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .history {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .human {
+            background-color: #e1f5fe;
+        }
+        .agent {
+            background-color: #f1f8e9;
+        }
+        .env {
+            background-color: #fff3e0;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .status {
+            display: flex;
+            justify-content: space-between;
+        }
+        .reward {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>OpenHands RL Demo</h1>
+    <div class="container">
+        <div class="panel">
+            <h2>Environment</h2>
+            <p>{{ env_description }}</p>
+            <div class="status">
+                <div>Status: {{ "Completed" if done else "In Progress" }}</div>
+                <div class="reward">Total Reward: {{ total_reward }}</div>
+            </div>
+        </div>
+        
+        <div class="panel history">
+            <h2>Interaction History</h2>
+            {% for message in history %}
+                <div class="message {{ message.type }}">
+                    <strong>{{ message.type|upper }}:</strong> {{ message.content }}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="panel">
+            <h2>Take Action</h2>
+            <form method="post">
+                <div class="controls">
+                    <input type="text" name="action" placeholder="Enter your action..." {% if done %}disabled{% endif %}>
+                    <button type="submit" {% if done %}disabled{% endif %}>Submit</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="panel">
+            <h2>Available Actions</h2>
+            <ul>
+                <li><strong>analyze [code]</strong> - Analyze code for issues</li>
+                <li><strong>refactor [code]</strong> - Refactor code to improve it</li>
+                <li><strong>test [code]</strong> - Write tests for the code</li>
+                <li><strong>debug [error]</strong> - Debug an error in the code</li>
+                <li><strong>implement [feature]</strong> - Implement a new feature</li>
+            </ul>
+        </div>
+        
+        <div class="panel">
+            <form method="post" action="/reset">
+                <button type="submit">Reset Environment</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+# Write the template to a file
+with open("templates/index.html", "w") as f:
+    f.write(template_content)
+
+# Global state
+env_description = "Coding environment for solving programming tasks."
+history = []
+total_reward = 0.0
+done = False
+env_server_url = "http://localhost:12000"
+
+
+@app.get("/", response_class=HTMLResponse)
+async def get_index(request: Request):
+    """Render the index page."""
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "env_description": env_description,
+            "history": history,
+            "total_reward": total_reward,
+            "done": done
+        }
+    )
+
+
+@app.post("/", response_class=HTMLResponse)
+async def post_action(request: Request, action: str = Form(...)):
+    """Process an action from the user."""
+    global total_reward, done
+    
+    # Add the action to history
+    history.append({"type": "human", "content": action})
+    
+    # Send the action to the environment
+    try:
+        response = requests.post(
+            f"{env_server_url}/step",
+            json={"idx": 0, "action": action}
+        )
+        response.raise_for_status()
+        result = response.json()
+        
+        # Update state
+        state = result["state"]
+        reward = result["reward"]
+        done = result["done"]
+        total_reward += reward
+        
+        # Add the environment response to history
+        history.append({"type": "env", "content": state})
+        
+    except Exception as e:
+        history.append({"type": "env", "content": f"Error: {str(e)}"})
+    
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "env_description": env_description,
+            "history": history,
+            "total_reward": total_reward,
+            "done": done
+        }
+    )
+
+
+@app.post("/reset", response_class=HTMLResponse)
+async def reset_environment(request: Request):
+    """Reset the environment."""
+    global history, total_reward, done, env_description
+    
+    # Reset the state
+    history = []
+    total_reward = 0.0
+    done = False
+    
+    # Reset the environment
+    try:
+        response = requests.post(
+            f"{env_server_url}/reset",
+            json={"idx": 0}
+        )
+        response.raise_for_status()
+        result = response.json()
+        
+        # Update state
+        env_description = result["state"]
+        
+        # Add the environment response to history
+        history.append({"type": "env", "content": env_description})
+        
+    except Exception as e:
+        history.append({"type": "env", "content": f"Error: {str(e)}"})
+    
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "env_description": env_description,
+            "history": history,
+            "total_reward": total_reward,
+            "done": done
+        }
+    )
+
+
+def main():
+    """Run the web interface."""
+    parser = argparse.ArgumentParser(description="Web interface for RL demo")
+    parser.add_argument("--host", type=str, default="0.0.0.0", help="Host to run the server on")
+    parser.add_argument("--port", type=int, default=12001, help="Port to run the server on")
+    parser.add_argument("--env-url", type=str, default="http://localhost:12000", help="URL of the environment server")
+    
+    args = parser.parse_args()
+    
+    global env_server_url
+    env_server_url = args.env_url
+    
+    # Reset the environment on startup
+    try:
+        response = requests.post(
+            f"{env_server_url}/reset",
+            json={"idx": 0}
+        )
+        response.raise_for_status()
+        result = response.json()
+        
+        # Update state
+        global env_description
+        env_description = result["state"]
+        
+        # Add the environment response to history
+        history.append({"type": "env", "content": env_description})
+        
+    except Exception as e:
+        print(f"Error resetting environment: {e}")
+        history.append({"type": "env", "content": f"Error: {str(e)}"})
+    
+    # Run the server
+    uvicorn.run(app, host=args.host, port=args.port)
+
+
+if __name__ == "__main__":
+    main()

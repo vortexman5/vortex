@@ -1,0 +1,108 @@
+###################### OpenHands RL Configuration ######################
+#
+# Configuration for OpenHands with Reinforcement Learning capabilities
+#
+##############################################################################
+
+#################################### Core ####################################
+# General core configurations
+##############################################################################
+[core]
+# Base path for the workspace
+workspace_base = "./workspace"
+
+# Cache directory path
+cache_dir = "/tmp/cache"
+
+# Debugging enabled
+debug = true
+
+# Runtime environment
+runtime = "local"
+
+# Name of the default agent
+default_agent = "RLAgent"
+
+#################################### LLM #####################################
+# Configuration for LLM models
+##############################################################################
+[llm]
+# API key to use
+api_key = ""
+
+# Model to use
+model = "gpt-4o"
+
+# Temperature for the API
+temperature = 0.7
+
+# Maximum number of output tokens
+max_output_tokens = 1024
+
+#################################### Agent ###################################
+# Configuration for agents
+##############################################################################
+[agent]
+# Whether the browsing tool is enabled
+enable_browsing = true
+
+# Whether the IPython tool is enabled
+enable_jupyter = true
+
+# LLM config group to use
+llm_config = "llm"
+
+#################################### RL ######################################
+# Configuration for Reinforcement Learning
+##############################################################################
+[rl]
+# Maximum number of turns in a conversation
+max_turns = 10
+
+# Maximum length of prompt
+max_prompt_length = 2048
+
+# Maximum length of response
+max_response_length = 512
+
+# Maximum length of observation
+max_obs_length = 1024
+
+# Whether to use ReAct format
+react_format = true
+
+# Environment name
+env_name = "webshop"
+
+# Port number for environment server
+env_port = 8000
+
+# Base URL for environment server
+env_server_base = "http://127.0.0.1"
+
+# Strategy to use for rollout (StandardReAct/ToT/MCTS)
+rollout_strategy = "StandardReAct"
+
+# Backend for storing trajectories (mongodb/file)
+storage_backend = "file"
+
+# Maximum number of worker threads
+max_workers = 10
+
+# Path to store trajectories
+trajectory_path = "./rl_trajectories"
+
+# Whether to enable training
+enable_training = false
+
+# Learning rate for training
+learning_rate = 1e-5
+
+# Number of training epochs
+num_epochs = 3
+
+# Batch size for training
+batch_size = 8
+
+# Maximum gradient norm for clipping
+max_grad_norm = 1.0
