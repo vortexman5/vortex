@@ -106,6 +106,25 @@ Vortex requires a PostgreSQL database for knowledge storage and agent memory:
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 
+# Install pgvector extension (required for vector embeddings)
+# For Ubuntu/Debian:
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+
+# Get PostgreSQL version
+PG_VERSION=$(psql --version | awk '{print $3}' | cut -d. -f1)
+
+# Install pgvector for your PostgreSQL version
+sudo apt-get install -y postgresql-${PG_VERSION}-pgvector
+
+# Restart PostgreSQL to load the new extension
+sudo systemctl restart postgresql
+
+# For macOS with Homebrew:
+# brew install pgvector
+# brew services restart postgresql
+
 # Create a database and user for Vortex
 sudo -u postgres psql -c "CREATE USER vortex WITH PASSWORD 'your_secure_password';"
 sudo -u postgres psql -c "CREATE DATABASE vortex_db OWNER vortex;"
@@ -114,6 +133,12 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vortex_db TO vortex;"
 # Enable extensions
 sudo -u postgres psql -d vortex_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
 sudo -u postgres psql -d vortex_db -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+
+# If you encounter issues with the vector extension, you may need to build it from source:
+# git clone --branch v0.5.1 https://github.com/pgvector/pgvector.git
+# cd pgvector
+# make
+# sudo make install
 ```
 
 Create a `.env` file in the project root with the following content:
@@ -819,6 +844,25 @@ Vortex uses PostgreSQL for knowledge storage, vector embeddings, and agent memor
 sudo apt update
 sudo apt install postgresql postgresql-contrib
 
+# Install pgvector extension (required for vector embeddings)
+# For Ubuntu/Debian:
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+
+# Get PostgreSQL version
+PG_VERSION=$(psql --version | awk '{print $3}' | cut -d. -f1)
+
+# Install pgvector for your PostgreSQL version
+sudo apt-get install -y postgresql-${PG_VERSION}-pgvector
+
+# Restart PostgreSQL to load the new extension
+sudo systemctl restart postgresql
+
+# For macOS with Homebrew:
+# brew install pgvector
+# brew services restart postgresql
+
 # Create a database and user
 sudo -u postgres psql -c "CREATE USER vortex WITH PASSWORD 'your_secure_password';"
 sudo -u postgres psql -c "CREATE DATABASE vortex_db OWNER vortex;"
@@ -827,6 +871,12 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE vortex_db TO vortex;"
 # Enable required extensions
 sudo -u postgres psql -d vortex_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
 sudo -u postgres psql -d vortex_db -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+
+# If you encounter issues with the vector extension, you may need to build it from source:
+# git clone --branch v0.5.1 https://github.com/pgvector/pgvector.git
+# cd pgvector
+# make
+# sudo make install
 ```
 
 ### Database Schema
