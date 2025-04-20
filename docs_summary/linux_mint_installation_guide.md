@@ -214,7 +214,7 @@ EOF
 
 ### Create Configuration File
 
-Create a `config.toml` file with full capabilities enabled:
+Create a `config.toml` file with full capabilities enabled, including reinforcement learning:
 
 ```bash
 cat > config.toml << EOF
@@ -223,6 +223,10 @@ cat > config.toml << EOF
 workspace_base = "$HOME/vortex/workspace"
 # Maximum iterations
 max_iterations = 500
+# Path to store trajectories
+save_trajectory_path = "$HOME/vortex/trajectories"
+# Whether to save screenshots in the trajectory
+save_screenshots_in_trajectory = true
 
 [llm]
 # LLM settings will be loaded from environment variables
@@ -259,6 +263,32 @@ use_host_network = true
 enable_gpu = true
 # Keep runtime alive after session ends
 keep_runtime_alive = true
+
+[rl]
+# Whether to enable reinforcement learning
+enabled = true
+# Maximum number of turns in a conversation
+max_turns = 10
+# Strategy to use for rollout
+rollout_strategy = "StandardReAct"
+# Backend for storing trajectories
+storage_backend = "file"
+# Path to store trajectories
+trajectory_path = "$HOME/vortex/rl_trajectories"
+# Whether to enable training
+enable_training = true
+
+[learning]
+# Whether learning is enabled
+enabled = true
+# Whether reinforcement learning is enabled
+reinforcement_learning = true
+# Whether knowledge acquisition is enabled
+knowledge_acquisition = true
+# Whether to automatically learn from user feedback
+learn_from_feedback = true
+# Path to store learned knowledge
+knowledge_path = "$HOME/vortex/knowledge"
 EOF
 ```
 

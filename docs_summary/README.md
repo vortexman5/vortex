@@ -27,21 +27,22 @@ This directory contains a comprehensive documentation of the Vortex framework, o
 13. [Knowledge Ingestion Guide](knowledge_ingestion_guide.md) - Detailed guide for feeding books, documentation, and other knowledge sources into Vortex
 14. [Linux Mint Installation Guide](linux_mint_installation_guide.md) - Detailed guide for installing and running Vortex on Linux Mint 22.1
 15. [Frontend Build Fix](frontend_build_fix.md) - Guide to fixing frontend build issues with Tailwind CSS
+16. [Reinforcement Learning Guide](reinforcement_learning_guide.md) - Guide to enabling and configuring reinforcement learning in all modes
 
 ## 4. Knowledge and Learning
 
-16. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
+17. [Learning and Knowledge](learning_and_knowledge.md) - Overview of Vortex's learning and knowledge management capabilities
 
 ## 5. Development and Roadmaps
 
-17. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
-18. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
-19. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
-20. [CLI Enhancement TODO List](todo.md) - Detailed task list for CLI enhancements and learning features
+18. [Enhancement Roadmap](enhancement_roadmap.md) - General roadmap for Vortex enhancements and features
+19. [Solo Development Roadmap](solo_development_roadmap.md) - Detailed roadmap for solo developers building large projects with Vortex
+20. [Vortex Evolution Roadmap](vortex_evolution_roadmap.md) - Comprehensive plan for evolving Vortex into an autonomous coding AI agent
+21. [CLI Enhancement TODO List](todo.md) - Detailed task list for CLI enhancements and learning features
 
 ## 6. Microagent Knowledge Base
 
-21. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents, including:
+22. [Microagent Knowledge Base](microagent_knowledge/README.md) - Specialized knowledge files for microagents, including:
     - [Add Agent](microagent_knowledge/add_agent.md) - Knowledge for adding new agents
     - [Docker](microagent_knowledge/docker.md) - Docker-related knowledge
     - [Flarglebargle](microagent_knowledge/flarglebargle.md) - Special testing microagent
@@ -71,24 +72,25 @@ Below is a complete index of all documentation files in this directory, organize
 9. [architecture_overview.md](architecture_overview.md) - Detailed architecture overview
 10. [llm_coding_options.md](llm_coding_options.md) - LLM coding options
 
-### Comprehensive Guides (11-15)
+### Comprehensive Guides (11-16)
 11. [comprehensive_cli_guide.md](comprehensive_cli_guide.md) - CLI guide
 12. [comprehensive_deployment_guide.md](comprehensive_deployment_guide.md) - Deployment guide
 13. [knowledge_ingestion_guide.md](knowledge_ingestion_guide.md) - Knowledge ingestion
 14. [linux_mint_installation_guide.md](linux_mint_installation_guide.md) - Linux Mint installation
 15. [frontend_build_fix.md](frontend_build_fix.md) - Frontend build fix
+16. [reinforcement_learning_guide.md](reinforcement_learning_guide.md) - Reinforcement learning guide
 
-### Knowledge and Learning (16)
-16. [learning_and_knowledge.md](learning_and_knowledge.md) - Learning and knowledge management
+### Knowledge and Learning (17)
+17. [learning_and_knowledge.md](learning_and_knowledge.md) - Learning and knowledge management
 
-### Development and Roadmaps (17-20)
-17. [enhancement_roadmap.md](enhancement_roadmap.md) - Enhancement roadmap
-18. [solo_development_roadmap.md](solo_development_roadmap.md) - Solo development roadmap
-19. [vortex_evolution_roadmap.md](vortex_evolution_roadmap.md) - Evolution roadmap
-20. [todo.md](todo.md) - CLI Enhancement TODO list
+### Development and Roadmaps (18-21)
+18. [enhancement_roadmap.md](enhancement_roadmap.md) - Enhancement roadmap
+19. [solo_development_roadmap.md](solo_development_roadmap.md) - Solo development roadmap
+20. [vortex_evolution_roadmap.md](vortex_evolution_roadmap.md) - Evolution roadmap
+21. [todo.md](todo.md) - CLI Enhancement TODO list
 
-### Microagent Knowledge Files (21)
-21. [microagent_knowledge/README.md](microagent_knowledge/README.md) - Microagent knowledge base overview
+### Microagent Knowledge Files (22)
+22. [microagent_knowledge/README.md](microagent_knowledge/README.md) - Microagent knowledge base overview
     - [microagent_knowledge/add_agent.md](microagent_knowledge/add_agent.md) - Adding new agents
     - [microagent_knowledge/docker.md](microagent_knowledge/docker.md) - Docker knowledge
     - [microagent_knowledge/flarglebargle.md](microagent_knowledge/flarglebargle.md) - Testing microagent
