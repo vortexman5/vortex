@@ -66,9 +66,26 @@ cd vortex
 
 #### Step 2: Set Up the Environment
 
-Create a virtual environment and install dependencies:
+Vortex uses Poetry for dependency management. Install Poetry and the project dependencies:
 
 ```bash
+# Install Poetry
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Install dependencies using Poetry
+poetry install
+
+# Activate the Poetry virtual environment
+poetry shell
+```
+
+Alternatively, if you prefer using pip, you can generate a requirements.txt file from Poetry:
+
+```bash
+# Generate requirements.txt from Poetry dependencies
+poetry export -f requirements.txt --output requirements.txt
+
+# Create a virtual environment and install dependencies
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt

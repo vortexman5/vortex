@@ -69,12 +69,20 @@ poetry shell
 If you prefer not to use Poetry:
 
 ```bash
-# Create a virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Install Poetry (if not already installed)
+curl -sSL https://install.python-poetry.org | python3 -
 
-# Install dependencies
-pip install -e .
+# Install dependencies using Poetry
+poetry install
+
+# Activate the Poetry virtual environment
+poetry shell
+
+# Alternatively, if you prefer using pip:
+# python3 -m venv venv
+# source venv/bin/activate  # On Windows: venv\Scripts\activate
+# poetry export -f requirements.txt --output requirements.txt
+# pip install -r requirements.txt
 ```
 
 ### 3. Install Additional System Dependencies

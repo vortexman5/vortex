@@ -330,8 +330,11 @@ store_trajectories = true
 After completing tasks, provide feedback on the solution:
 
 ```bash
-# When using CLI
-python -m openhands.cli --feedback "This solution was efficient and well-documented" --rating 5
+# When using CLI with Poetry
+poetry run python -m openhands.cli --feedback "This solution was efficient and well-documented" --rating 5
+
+# Or if you've activated the Poetry shell
+# python -m openhands.cli --feedback "This solution was efficient and well-documented" --rating 5
 ```
 
 ### 3. Create Knowledge Collections
@@ -339,11 +342,15 @@ python -m openhands.cli --feedback "This solution was efficient and well-documen
 Organize related knowledge into collections:
 
 ```bash
-# Create a new knowledge collection
-python -m openhands.tools.knowledge create --name "python_web_development"
+# Create a new knowledge collection with Poetry
+poetry run python -m openhands.tools.knowledge create --name "python_web_development"
 
 # Add an item to the collection
-python -m openhands.tools.knowledge add --collection "python_web_development" --file flask_example.py
+poetry run python -m openhands.tools.knowledge add --collection "python_web_development" --file flask_example.py
+
+# Or if you've activated the Poetry shell:
+# python -m openhands.tools.knowledge create --name "python_web_development"
+# python -m openhands.tools.knowledge add --collection "python_web_development" --file flask_example.py
 ```
 
 ### 4. Analyze Learning Progress
@@ -351,8 +358,11 @@ python -m openhands.tools.knowledge add --collection "python_web_development" --
 Periodically review learning metrics:
 
 ```bash
-# Generate learning report
-python -m openhands.tools.learning report --last-days 30
+# Generate learning report with Poetry
+poetry run python -m openhands.tools.learning report --last-days 30
+
+# Or if you've activated the Poetry shell:
+# python -m openhands.tools.learning report --last-days 30
 ```
 
 ### 5. Export and Import Knowledge
@@ -360,11 +370,15 @@ python -m openhands.tools.learning report --last-days 30
 Share knowledge between deployments:
 
 ```bash
-# Export knowledge
-python -m openhands.tools.knowledge export --collection "python_web_development" --output knowledge.zip
+# Export knowledge with Poetry
+poetry run python -m openhands.tools.knowledge export --collection "python_web_development" --output knowledge.zip
 
 # Import knowledge
-python -m openhands.tools.knowledge import --input knowledge.zip
+poetry run python -m openhands.tools.knowledge import --input knowledge.zip
+
+# Or if you've activated the Poetry shell:
+# python -m openhands.tools.knowledge export --collection "python_web_development" --output knowledge.zip
+# python -m openhands.tools.knowledge import --input knowledge.zip
 ```
 
 ### 6. Configure Memory Parameters

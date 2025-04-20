@@ -204,13 +204,14 @@ cd llama.cpp
 # Build llama.cpp
 make
 
-# Create a Python virtual environment
-python3 -m pip install --user virtualenv
-python3 -m venv venv
-source venv/bin/activate
+# Install Poetry (if not already installed)
+curl -sSL https://install.python-poetry.org | python3 -
 
-# Install Python bindings
-pip install -e .
+# Install dependencies using Poetry
+poetry install
+
+# Activate the Poetry virtual environment
+poetry shell
 ```
 
 ### 2.3 Download Quantized Mistral 7B Model
@@ -256,8 +257,11 @@ Parameters explained:
 For integration with Vortex/OpenHands, we'll create a Python interface:
 
 ```bash
-# Install required packages
-pip install llama-cpp-python fastapi uvicorn pydantic
+# Install required packages with Poetry
+poetry add llama-cpp-python fastapi uvicorn pydantic
+
+# Or with pip if you're not using Poetry:
+# pip install llama-cpp-python fastapi uvicorn pydantic
 
 # Create a server script
 cat > mistral_server.py << 'EOF'
@@ -515,8 +519,11 @@ If you prefer a more Python-native approach, you can use Hugging Face Transforme
 python3 -m venv mistral_env
 source mistral_env/bin/activate
 
-# Install required packages
-pip install transformers torch accelerate bitsandbytes langchain fastapi uvicorn
+# Install required packages with Poetry
+poetry add transformers torch accelerate bitsandbytes langchain fastapi uvicorn
+
+# Or with pip if you're not using Poetry:
+# pip install transformers torch accelerate bitsandbytes langchain fastapi uvicorn
 
 # Create a server script
 cat > mistral_hf_server.py << 'EOF'

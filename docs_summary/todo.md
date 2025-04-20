@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Vortex CLI Enhancement TODO List
+=======
+# CLI Enhancement TODO List
+>>>>>>> c48dbcb45d9ba28e870a0bb59a9b5c1f807934f6
 
 This document outlines the tasks needed to implement the missing features and capabilities in the Vortex CLI mode, with a focus on learning and knowledge management. For a more detailed roadmap, see [Comprehensive CLI Guide](comprehensive_cli_guide.md).
 

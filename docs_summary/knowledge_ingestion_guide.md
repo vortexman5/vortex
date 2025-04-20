@@ -54,7 +54,11 @@ Before ingesting documents, you need to set up a vector database to store the kn
 ### 1. Install Required Dependencies
 
 ```bash
-pip install pgvector psycopg2-binary pypdf langchain sentence-transformers
+# Using Poetry (recommended)
+poetry add pgvector psycopg2-binary pypdf langchain sentence-transformers
+
+# Or using pip
+# pip install pgvector psycopg2-binary pypdf langchain sentence-transformers
 ```
 
 ### 2. Local Database Setup
@@ -416,7 +420,7 @@ class DocumentProcessor:
                 text = '\n'.join(chunk for chunk in chunks if chunk)
                 return text
         except ImportError:
-            logger.error("BeautifulSoup4 is required for HTML processing. Install with: pip install beautifulsoup4")
+            logger.error("BeautifulSoup4 is required for HTML processing. Install with: poetry add beautifulsoup4 or pip install beautifulsoup4")
             raise
         except Exception as e:
             logger.error(f"Error extracting HTML content from {file_path}: {e}")
@@ -432,7 +436,7 @@ class DocumentProcessor:
                 full_text.append(para.text)
             return '\n'.join(full_text)
         except ImportError:
-            logger.error("python-docx is required for DOCX processing. Install with: pip install python-docx")
+            logger.error("python-docx is required for DOCX processing. Install with: poetry add python-docx or pip install python-docx")
             raise
         except Exception as e:
             logger.error(f"Error extracting DOCX content from {file_path}: {e}")
@@ -1484,9 +1488,9 @@ def _synthesize_knowledge(self, items):
 
 **Solution**:
 - Ensure you have the necessary dependencies installed:
-  - For PDF: `pip install pypdf`
-  - For DOCX: `pip install python-docx`
-  - For HTML: `pip install beautifulsoup4`
+  - For PDF: `poetry add pypdf` or `pip install pypdf`
+  - For DOCX: `poetry add python-docx` or `pip install python-docx`
+  - For HTML: `poetry add beautifulsoup4` or `pip install beautifulsoup4`
 - Check file encoding and convert if necessary: `iconv -f ISO-8859-1 -t UTF-8 input.txt > output.txt`
 - For large files, try increasing chunk size or processing in parts
 - For remote processing, check disk space and memory availability

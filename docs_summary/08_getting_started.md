@@ -8,13 +8,37 @@ This guide will help you get started with the Vortex framework, covering install
 
 Before installing Vortex, ensure you have the following prerequisites:
 
-- Python 3.10 or higher
+- Python 3.12 or higher (as specified in pyproject.toml)
+- Poetry (recommended for dependency management)
 - Docker (for the runtime environment)
 - Git (for version control)
 
 ### Installation Methods
 
-#### With Python
+#### With Poetry (Recommended)
+
+1. Install Poetry:
+   ```bash
+   curl -sSL https://install.python-poetry.org | python3 -
+   ```
+
+2. Clone the repository:
+   ```bash
+   git clone https://codeberg.org/Adamcatholic/vortex.git
+   cd vortex
+   ```
+
+3. Install the dependencies:
+   ```bash
+   poetry install
+   ```
+
+4. Activate the virtual environment:
+   ```bash
+   poetry shell
+   ```
+
+#### With Pip
 
 1. Clone the repository:
    ```bash
@@ -22,9 +46,16 @@ Before installing Vortex, ensure you have the following prerequisites:
    cd vortex
    ```
 
-2. Install the dependencies:
+2. Generate requirements.txt from Poetry dependencies:
    ```bash
-   pip install -e .
+   poetry export -f requirements.txt --output requirements.txt
+   ```
+
+3. Create a virtual environment and install dependencies:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
    ```
 
 #### With Docker
