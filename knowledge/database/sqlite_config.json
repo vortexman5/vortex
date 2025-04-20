@@ -1,0 +1,9 @@
+{
+    "db_type": "sqlite",
+    "connection": {
+        "path": "/path/to/local/database.sqlite"
+    },
+    "query": "SELECT id, question, answer, tags FROM faq",
+    "content_columns": ["question", "answer"],
+    "metadata_columns": ["id", "tags"]
+}

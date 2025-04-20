@@ -1,0 +1,13 @@
+{
+    "db_type": "postgresql",
+    "connection": {
+        "host": "localhost",
+        "port": "5432",
+        "dbname": "source_db",
+        "user": "db_user",
+        "password": "db_password"
+    },
+    "query": "SELECT id, title, content, author, created_at, category FROM articles WHERE published = true",
+    "content_columns": ["title", "content"],
+    "metadata_columns": ["id", "author", "created_at", "category"]
+}

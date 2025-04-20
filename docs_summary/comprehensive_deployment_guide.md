@@ -241,6 +241,7 @@ To enable Vortex to ingest knowledge from various sources:
 mkdir -p knowledge/books
 mkdir -p knowledge/documentation
 mkdir -p knowledge/websites
+mkdir -p knowledge/database
 ```
 
 2. Add the knowledge ingestion script:
@@ -260,7 +261,37 @@ python ingest_knowledge.py --source knowledge/documentation --type markdown
 
 # For websites
 python ingest_knowledge.py --source knowledge/websites --type url
+
+# For external databases
+# First create a database configuration file (see examples in knowledge/database/)
+python ingest_knowledge.py --source knowledge/database --type database --config knowledge/database/your_config.json
 ```
+
+4. Database Knowledge Ingestion:
+
+For database ingestion, you need to create a JSON configuration file with the following structure:
+
+```json
+{
+    "db_type": "postgresql",
+    "connection": {
+        "host": "localhost",
+        "port": "5432",
+        "dbname": "source_db",
+        "user": "db_user",
+        "password": "db_password"
+    },
+    "query": "SELECT id, title, content FROM articles WHERE published = true",
+    "content_columns": ["title", "content"],
+    "metadata_columns": ["id"]
+}
+```
+
+Supported database types include:
+- PostgreSQL
+- MySQL
+- Microsoft SQL Server
+- SQLite
 
 #### Step 7: Start the Vortex Agent
 

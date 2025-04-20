@@ -1,0 +1,13 @@
+{
+    "db_type": "mysql",
+    "connection": {
+        "host": "localhost",
+        "port": "3306",
+        "dbname": "knowledge_db",
+        "user": "mysql_user",
+        "password": "mysql_password"
+    },
+    "query": "SELECT id, product_name, description, specifications, price, category FROM products WHERE active = 1",
+    "content_columns": ["product_name", "description", "specifications"],
+    "metadata_columns": ["id", "price", "category"]
+}
