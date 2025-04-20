@@ -75,8 +75,14 @@ curl -sSL https://install.python-poetry.org | python3 -
 # Install dependencies using Poetry
 poetry install
 
-# Activate the Poetry virtual environment
-poetry shell
+# Activate the Poetry virtual environment (for Poetry 2.0.0+)
+# Option 1: Use the env activate command (recommended)
+poetry env use python
+source $(poetry env info --path)/bin/activate
+
+# Option 2: Install the shell plugin and use the shell command
+# poetry self add poetry-plugin-shell
+# poetry shell
 ```
 
 Alternatively, if you prefer using pip, you can generate a requirements.txt file from Poetry:
@@ -552,8 +558,14 @@ curl -sSL https://install.python-poetry.org | python3 -
 # Install dependencies
 poetry install
 
-# Activate the virtual environment
-poetry shell
+# Activate the virtual environment (for Poetry 2.0.0+)
+# Option 1: Use the env activate command (recommended)
+poetry env use python
+source $(poetry env info --path)/bin/activate
+
+# Option 2: Install the shell plugin and use the shell command
+# poetry self add poetry-plugin-shell
+# poetry shell
 ```
 
 #### Step 3: Install Frontend Dependencies
