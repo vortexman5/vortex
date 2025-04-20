@@ -16,7 +16,7 @@ This guide explains how to enable and configure reinforcement learning in Vortex
 
 ## Introduction
 
-Vortex includes a powerful reinforcement learning (RL) system that enables the agent to improve over time through experience. By default, this system may not be enabled in all configurations, but it can be easily activated to enhance the agent's capabilities.
+Vortex includes a powerful reinforcement learning (RL) system that enables the agent to improve over time through experience. This system is now enabled by default in the template configuration, making it easier to benefit from these advanced capabilities.
 
 Reinforcement learning in Vortex allows the agent to:
 
@@ -39,7 +39,7 @@ Here are the key configuration options for each section:
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `enabled` | Whether to enable reinforcement learning | `false` |
+| `enabled` | Whether to enable reinforcement learning | `true` |
 | `max_turns` | Maximum number of turns in a conversation | `10` |
 | `max_prompt_length` | Maximum length of prompt | `2048` |
 | `max_response_length` | Maximum length of response | `512` |
@@ -59,25 +59,25 @@ Here are the key configuration options for each section:
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `enabled` | Whether learning is enabled | `false` |
-| `reinforcement_learning` | Whether reinforcement learning is enabled | `false` |
-| `knowledge_acquisition` | Whether knowledge acquisition is enabled | `false` |
-| `learn_from_feedback` | Whether to automatically learn from user feedback | `false` |
-| `learn_from_errors` | Whether to automatically learn from errors | `false` |
+| `enabled` | Whether learning is enabled | `true` |
+| `reinforcement_learning` | Whether reinforcement learning is enabled | `true` |
+| `knowledge_acquisition` | Whether knowledge acquisition is enabled | `true` |
+| `learn_from_feedback` | Whether to automatically learn from user feedback | `true` |
+| `learn_from_errors` | Whether to automatically learn from errors | `true` |
 | `knowledge_path` | Path to store learned knowledge | `"./knowledge"` |
 | `max_knowledge_size` | Maximum size of knowledge base (in MB) | `1000` |
 | `consolidation_frequency` | Frequency of knowledge consolidation (in hours) | `24` |
 
 ## Enabling Reinforcement Learning
 
-### Using the Consolidated Template Configuration
+### Using the Template Configuration
 
-The easiest way to enable reinforcement learning is to use the provided consolidated template configuration file:
+The easiest way to use reinforcement learning is to use the provided template configuration file, which already has reinforcement learning enabled by default:
 
-1. Copy the consolidated template:
+1. Copy the template:
 
 ```bash
-cp config.consolidated.toml config.toml
+cp config.template.toml config.toml
 ```
 
 2. Edit the configuration file to set your API keys and other settings:
@@ -92,7 +92,7 @@ nano config.toml
 python start_web_server.py
 ```
 
-> **Note**: The consolidated template already has reinforcement learning enabled by default.
+> **Note**: The template already has reinforcement learning enabled by default.
 
 ### Modifying an Existing Configuration
 

@@ -214,11 +214,11 @@ EOF
 
 ### Create Configuration File
 
-You can use the consolidated template configuration file that includes reinforcement learning enabled by default:
+Use the template configuration file that includes all features, including reinforcement learning enabled by default:
 
 ```bash
-# Copy the consolidated template
-cp config.consolidated.toml config.toml
+# Copy the template
+cp config.template.toml config.toml
 
 # Edit the configuration file to customize for Linux Mint
 sed -i "s|workspace_base = \"./workspace\"|workspace_base = \"$HOME/vortex/workspace\"|g" config.toml
@@ -227,7 +227,7 @@ sed -i "s|trajectory_path = \"./rl_trajectories\"|trajectory_path = \"$HOME/vort
 sed -i "s|knowledge_path = \"./knowledge\"|knowledge_path = \"$HOME/vortex/knowledge\"|g" config.toml
 ```
 
-Alternatively, you can create a custom `config.toml` file with full capabilities enabled, including reinforcement learning:
+Alternatively, you can create a custom `config.toml` file with specific settings:
 
 ```bash
 cat > config.toml << EOF

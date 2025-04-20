@@ -200,13 +200,13 @@ Admin mode disables the security checks that normally prevent potentially risky 
    confirmation_mode = false
    ```
 
-3. **Start OpenHands with the admin configuration**:
+3. **Start OpenHands with your configuration**:
    ```bash
    # For CLI mode
-   python -m openhands.cli --config config.admin.toml
+   python -m openhands.cli --config config.toml
    
    # For server mode
-   python -m openhands.server --config config.admin.toml
+   python -m openhands.server --config config.toml
    ```
 
 For detailed instructions and security implications, see the [Admin Mode Documentation](docs/admin_mode.md).

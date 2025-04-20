@@ -13,7 +13,7 @@ This guide explains the consolidated configuration system in Vortex AI, which co
 
 ## Introduction
 
-Vortex AI uses a TOML-based configuration system that allows you to customize various aspects of its behavior. Previously, different features and modes had separate configuration files, which could be confusing and difficult to manage. The consolidated configuration system combines all these options into a single, comprehensive file.
+Vortex AI uses a TOML-based configuration system that allows you to customize various aspects of its behavior. We've consolidated all configuration options into a single, comprehensive template file (`config.template.toml`), making it easier to configure and manage your Vortex AI installation.
 
 The consolidated configuration includes:
 - Core settings for workspace, debugging, and runtime
@@ -30,10 +30,10 @@ The consolidated configuration includes:
 
 ### Basic Usage
 
-1. Copy the consolidated template to create your configuration:
+1. Copy the template to create your configuration:
 
 ```bash
-cp config.consolidated.toml config.toml
+cp config.template.toml config.toml
 ```
 
 2. Edit the configuration file to set your API keys and customize settings:
