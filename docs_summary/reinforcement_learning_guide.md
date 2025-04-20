@@ -70,14 +70,14 @@ Here are the key configuration options for each section:
 
 ## Enabling Reinforcement Learning
 
-### Using the Template Configuration
+### Using the Consolidated Template Configuration
 
-The easiest way to enable reinforcement learning is to use the provided template configuration file:
+The easiest way to enable reinforcement learning is to use the provided consolidated template configuration file:
 
-1. Copy the reinforcement learning template:
+1. Copy the consolidated template:
 
 ```bash
-cp config.rl.template.toml config.toml
+cp config.consolidated.toml config.toml
 ```
 
 2. Edit the configuration file to set your API keys and other settings:
@@ -91,6 +91,8 @@ nano config.toml
 ```bash
 python start_web_server.py
 ```
+
+> **Note**: The consolidated template already has reinforcement learning enabled by default.
 
 ### Modifying an Existing Configuration
 
