@@ -38,6 +38,7 @@ export default {
           colors: {
             primary: "#4465DB",
             logo: "#CFB755",
+            tertiary: "#454545", // Added tertiary color to the dark theme
           },
         },
       },
